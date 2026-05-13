@@ -19,7 +19,7 @@ REFERENCE_PATTERN = re.compile(
 )
 TRAILING_PUNCTUATION = ",.;!?"
 _SENSITIVE_HOME_DIRS = (".ssh", ".aws", ".gnupg", ".kube", ".docker", ".azure", ".config/gh")
-_SENSITIVE_HERMES_DIRS = (Path("skills") / ".hub",)
+_SENSITIVE_ANYDEALS_DIRS = (Path("skills") / ".hub",)
 _SENSITIVE_HOME_FILES = (
     Path(".ssh") / "authorized_keys",
     Path(".ssh") / "id_rsa",
@@ -340,14 +340,14 @@ def _resolve_path(cwd: Path, target: str, *, allowed_root: Path | None = None) -
 
 
 def _ensure_reference_path_allowed(path: Path) -> None:
-    from hermes_constants import get_hermes_home
+    from AnyDeals_constants import get_AnyDeals_home
     home = Path(os.path.expanduser("~")).resolve()
-    hermes_home = get_hermes_home().resolve()
+    AnyDeals_home = get_AnyDeals_home().resolve()
 
     blocked_exact = {home / rel for rel in _SENSITIVE_HOME_FILES}
-    blocked_exact.add(hermes_home / ".env")
+    blocked_exact.add(AnyDeals_home / ".env")
     blocked_dirs = [home / rel for rel in _SENSITIVE_HOME_DIRS]
-    blocked_dirs.extend(hermes_home / rel for rel in _SENSITIVE_HERMES_DIRS)
+    blocked_dirs.extend(AnyDeals_home / rel for rel in _SENSITIVE_ANYDEALS_DIRS)
 
     if path in blocked_exact:
         raise ValueError("path is a sensitive credential file and cannot be attached")
@@ -357,7 +357,7 @@ def _ensure_reference_path_allowed(path: Path) -> None:
             path.relative_to(blocked_dir)
         except ValueError:
             continue
-        raise ValueError("path is a sensitive credential or internal Hermes path and cannot be attached")
+        raise ValueError("path is a sensitive credential or internal Anydeals path and cannot be attached")
 
 
 def _strip_trailing_punctuation(value: str) -> str:

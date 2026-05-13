@@ -8,13 +8,13 @@ import pytest
 
 @pytest.fixture
 def main_mod():
-    import hermes_cli.main as m
+    import AnyDeals_cli.main as m
 
     return m
 
 
 def _touch_ink(root: Path) -> None:
-    ink = root / "node_modules" / "@hermes" / "ink" / "package.json"
+    ink = root / "node_modules" / "@AnyDeals" / "ink" / "package.json"
     ink.parent.mkdir(parents=True, exist_ok=True)
     ink.write_text("{}")
 

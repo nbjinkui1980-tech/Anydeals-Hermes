@@ -1,2 +1,29 @@
-# Auto-generated files — collapse diffs and exclude from language stats
-web/package-lock.json linguist-generated=true
+# Git 合并策略配置
+# 当从上游同步时，自动处理品牌相关的冲突
+
+# ============================================
+# 品牌相关文件 - 优先保留本地版本
+# ============================================
+pyproject.toml    merge=ours
+hermes/config.py  merge=ours
+BRANDING.md       merge=ours
+
+# ============================================
+# 核心代码 - 优先使用上游版本
+# ============================================
+hermes/agent/     merge=union
+hermes/skills/    merge=union
+hermes/memory/    merge=union
+
+# ============================================
+# 文档 - 尝试自动合并
+# ============================================
+*.md              merge=union
+*.txt             merge=union
+
+# ============================================
+# 二进制文件 - 不合并
+# ============================================
+*.png             binary
+*.jpg             binary
+*.ico             binary

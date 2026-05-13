@@ -1,4 +1,4 @@
-"""Tests for the Kanban DB layer (hermes_cli.kanban_db)."""
+"""Tests for the Kanban DB layer (AnyDeals_cli.kanban_db)."""
 
 from __future__ import annotations
 
@@ -9,15 +9,15 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import kanban_db as kb
+from AnyDeals_cli import kanban_db as kb
 
 
 @pytest.fixture
 def kanban_home(tmp_path, monkeypatch):
-    """Isolated HERMES_HOME with an empty kanban DB."""
-    home = tmp_path / ".hermes"
+    """Isolated ANYDEALS_HOME with an empty kanban DB."""
+    home = tmp_path / ".AnyDeals"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("ANYDEALS_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     kb.init_db()
     return home
@@ -170,7 +170,7 @@ def test_claim_fails_on_non_ready(kanban_home):
 
 def test_stale_claim_reclaimed(kanban_home, monkeypatch):
     import signal
-    import hermes_cli.kanban_db as _kb
+    import AnyDeals_cli.kanban_db as _kb
 
     with kb.connect() as conn:
         t = kb.create_task(conn, title="x", assignee="a")
@@ -204,7 +204,7 @@ def test_stale_claim_with_live_pid_extends_instead_of_reclaiming(
     ``DEFAULT_CLAIM_TTL_SECONDS`` inside a single tool-free LLM call;
     killing those healthy workers produces a respawn loop with zero
     progress."""
-    import hermes_cli.kanban_db as _kb
+    import AnyDeals_cli.kanban_db as _kb
 
     with kb.connect() as conn:
         t = kb.create_task(conn, title="x", assignee="a")
@@ -247,7 +247,7 @@ def test_stale_claim_reclaim_event_records_diagnostic_payload(
     (#23025: previous payload only had ``stale_lock`` which gives no
     timing context)."""
     import json
-    import hermes_cli.kanban_db as _kb
+    import AnyDeals_cli.kanban_db as _kb
 
     with kb.connect() as conn:
         t = kb.create_task(conn, title="x", assignee="a")
@@ -610,7 +610,7 @@ def test_dispatch_skips_nonspawnable_into_separate_bucket(kanban_home, monkeypat
     ``skipped_unassigned`` (which is operator-actionable) — they go in
     the dedicated ``skipped_nonspawnable`` bucket so health telemetry
     can suppress false-positive "stuck" warnings."""
-    from hermes_cli import profiles
+    from AnyDeals_cli import profiles
     monkeypatch.setattr(profiles, "profile_exists", lambda name: False)
     with kb.connect() as conn:
         t = kb.create_task(conn, title="for-terminal", assignee="orion-cc")
@@ -624,7 +624,7 @@ def test_has_spawnable_ready_false_when_only_terminal_lanes(kanban_home, monkeyp
     """``has_spawnable_ready`` returns False when every ready task is
     assigned to a control-plane lane — used by gateway/CLI dispatchers
     to silence the stuck-warn while terminals still have queued work."""
-    from hermes_cli import profiles
+    from AnyDeals_cli import profiles
     monkeypatch.setattr(profiles, "profile_exists", lambda name: False)
     with kb.connect() as conn:
         kb.create_task(conn, title="t1", assignee="orion-cc")
@@ -634,15 +634,15 @@ def test_has_spawnable_ready_false_when_only_terminal_lanes(kanban_home, monkeyp
 
 def test_has_spawnable_ready_true_when_real_profile_present(kanban_home, monkeypatch):
     """``has_spawnable_ready`` returns True as soon as ANY ready task
-    has an assignee that maps to a real Hermes profile — preserves the
+    has an assignee that maps to a real Anydeals profile — preserves the
     real "stuck" signal when a daily/agent task is queued."""
-    from hermes_cli import profiles
+    from AnyDeals_cli import profiles
     monkeypatch.setattr(
         profiles, "profile_exists", lambda name: name == "daily"
     )
     with kb.connect() as conn:
         kb.create_task(conn, title="terminal-task", assignee="orion-cc")
-        kb.create_task(conn, title="hermes-task", assignee="daily")
+        kb.create_task(conn, title="AnyDeals-task", assignee="daily")
         assert kb.has_spawnable_ready(conn) is True
 
 
@@ -752,7 +752,7 @@ def test_dispatch_reclaims_stale_before_spawning(kanban_home):
 # Workspace resolution
 # ---------------------------------------------------------------------------
 
-def test_scratch_workspace_created_under_hermes_home(kanban_home):
+def test_scratch_workspace_created_under_AnyDeals_home(kanban_home):
     with kb.connect() as conn:
         t = kb.create_task(conn, title="x")
         task = kb.get_task(conn, t)
@@ -814,26 +814,26 @@ def test_tenant_propagates_to_events(kanban_home):
 # Shared-board path resolution (issue #19348)
 #
 # The kanban board is a cross-profile coordination primitive: a worker
-# spawned with `hermes -p <profile>` must read/write the same kanban.db
+# spawned with `AnyDeals -p <profile>` must read/write the same kanban.db
 # as the dispatcher that claimed the task. These tests exercise the
 # path-resolution layer directly and would have caught the regression
-# where `kanban_db_path()` resolved to the active profile's HERMES_HOME.
+# where `kanban_db_path()` resolved to the active profile's ANYDEALS_HOME.
 # ---------------------------------------------------------------------------
 
 class TestSharedBoardPaths:
     """`kanban_home`/`kanban_db_path`/`workspaces_root`/`worker_log_path`
-    must anchor at the **shared root**, not the active profile's HERMES_HOME."""
+    must anchor at the **shared root**, not the active profile's ANYDEALS_HOME."""
 
-    def _set_home(self, monkeypatch, tmp_path, hermes_home):
+    def _set_home(self, monkeypatch, tmp_path, AnyDeals_home):
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-        monkeypatch.delenv("HERMES_KANBAN_HOME", raising=False)
+        monkeypatch.setenv("ANYDEALS_HOME", str(AnyDeals_home))
+        monkeypatch.delenv("ANYDEALS_KANBAN_HOME", raising=False)
 
-    def test_default_install_anchors_at_home_dot_hermes(
+    def test_default_install_anchors_at_home_dot_AnyDeals(
         self, tmp_path, monkeypatch
     ):
-        # Standard install: HERMES_HOME == ~/.hermes, no profile active.
-        default_home = tmp_path / ".hermes"
+        # Standard install: ANYDEALS_HOME == ~/.AnyDeals, no profile active.
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         self._set_home(monkeypatch, tmp_path, default_home)
 
@@ -848,18 +848,18 @@ class TestSharedBoardPaths:
     def test_profile_worker_resolves_to_shared_root(
         self, tmp_path, monkeypatch
     ):
-        # Reproduces the bug: dispatcher uses ~/.hermes/kanban.db,
+        # Reproduces the bug: dispatcher uses ~/.AnyDeals/kanban.db,
         # worker spawned with -p <profile> previously resolved to
-        # ~/.hermes/profiles/<profile>/kanban.db. After the fix both
-        # converge on ~/.hermes/kanban.db.
-        default_home = tmp_path / ".hermes"
+        # ~/.AnyDeals/profiles/<profile>/kanban.db. After the fix both
+        # converge on ~/.AnyDeals/kanban.db.
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         profile_home = default_home / "profiles" / "nehemiahkanban"
         profile_home.mkdir(parents=True)
         self._set_home(monkeypatch, tmp_path, profile_home)
 
         # All four resolvers must anchor at the shared root, not the
-        # profile-local HERMES_HOME.
+        # profile-local ANYDEALS_HOME.
         assert kb.kanban_home() == default_home
         assert kb.kanban_db_path() == default_home / "kanban.db"
         assert kb.workspaces_root() == default_home / "kanban" / "workspaces"
@@ -876,9 +876,9 @@ class TestSharedBoardPaths:
         self, tmp_path, monkeypatch
     ):
         # End-to-end convergence: resolve the path under each side's
-        # HERMES_HOME and confirm equality. This is the property the
+        # ANYDEALS_HOME and confirm equality. This is the property the
         # dispatcher/worker handoff actually depends on.
-        default_home = tmp_path / ".hermes"
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         profile_home = default_home / "profiles" / "coder"
         profile_home.mkdir(parents=True)
@@ -889,8 +889,8 @@ class TestSharedBoardPaths:
         dispatcher_ws = kb.workspaces_root()
         dispatcher_log = kb.worker_log_path("t_handoff")
 
-        # Worker's perspective (profile activated by `hermes -p coder`).
-        monkeypatch.setenv("HERMES_HOME", str(profile_home))
+        # Worker's perspective (profile activated by `AnyDeals -p coder`).
+        monkeypatch.setenv("ANYDEALS_HOME", str(profile_home))
         worker_db = kb.kanban_db_path()
         worker_ws = kb.workspaces_root()
         worker_log = kb.worker_log_path("t_handoff")
@@ -899,14 +899,14 @@ class TestSharedBoardPaths:
         assert dispatcher_ws == worker_ws
         assert dispatcher_log == worker_log
 
-    def test_docker_custom_hermes_home_uses_env_path_directly(
+    def test_docker_custom_AnyDeals_home_uses_env_path_directly(
         self, tmp_path, monkeypatch
     ):
-        # Docker / custom deployment: HERMES_HOME points outside ~/.hermes.
-        # `get_default_hermes_root()` returns env_home directly when it
+        # Docker / custom deployment: ANYDEALS_HOME points outside ~/.AnyDeals.
+        # `get_default_AnyDeals_root()` returns env_home directly when it
         # is not a `<root>/profiles/<name>` shape and not under
-        # `Path.home() / ".hermes"`.
-        custom_root = tmp_path / "opt" / "hermes"
+        # `Path.home() / ".AnyDeals"`.
+        custom_root = tmp_path / "opt" / "AnyDeals"
         custom_root.mkdir(parents=True)
         self._set_home(monkeypatch, tmp_path, custom_root)
 
@@ -916,10 +916,10 @@ class TestSharedBoardPaths:
     def test_docker_profile_layout_uses_grandparent(
         self, tmp_path, monkeypatch
     ):
-        # Docker profile shape: HERMES_HOME=/opt/hermes/profiles/coder;
-        # `get_default_hermes_root()` walks up to /opt/hermes because
+        # Docker profile shape: ANYDEALS_HOME=/opt/AnyDeals/profiles/coder;
+        # `get_default_AnyDeals_root()` walks up to /opt/AnyDeals because
         # the immediate parent dir is named "profiles".
-        custom_root = tmp_path / "opt" / "hermes"
+        custom_root = tmp_path / "opt" / "AnyDeals"
         profile = custom_root / "profiles" / "coder"
         profile.mkdir(parents=True)
         self._set_home(monkeypatch, tmp_path, profile)
@@ -927,20 +927,20 @@ class TestSharedBoardPaths:
         assert kb.kanban_home() == custom_root
         assert kb.kanban_db_path() == custom_root / "kanban.db"
 
-    def test_explicit_override_via_hermes_kanban_home(
+    def test_explicit_override_via_AnyDeals_kanban_home(
         self, tmp_path, monkeypatch
     ):
-        # Explicit override: HERMES_KANBAN_HOME beats every other
+        # Explicit override: ANYDEALS_KANBAN_HOME beats every other
         # resolution rule.
-        default_home = tmp_path / ".hermes"
+        default_home = tmp_path / ".AnyDeals"
         profile_home = default_home / "profiles" / "any"
         profile_home.mkdir(parents=True)
         override = tmp_path / "shared-board"
         override.mkdir()
 
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("HERMES_HOME", str(profile_home))
-        monkeypatch.setenv("HERMES_KANBAN_HOME", str(override))
+        monkeypatch.setenv("ANYDEALS_HOME", str(profile_home))
+        monkeypatch.setenv("ANYDEALS_KANBAN_HOME", str(override))
 
         assert kb.kanban_home() == override
         assert kb.kanban_db_path() == override / "kanban.db"
@@ -948,11 +948,11 @@ class TestSharedBoardPaths:
 
     def test_empty_override_falls_through(self, tmp_path, monkeypatch):
         # Empty/whitespace override is treated as unset.
-        default_home = tmp_path / ".hermes"
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("HERMES_HOME", str(default_home))
-        monkeypatch.setenv("HERMES_KANBAN_HOME", "   ")
+        monkeypatch.setenv("ANYDEALS_HOME", str(default_home))
+        monkeypatch.setenv("ANYDEALS_KANBAN_HOME", "   ")
 
         assert kb.kanban_home() == default_home
 
@@ -960,9 +960,9 @@ class TestSharedBoardPaths:
         self, tmp_path, monkeypatch
     ):
         # Belt-and-suspenders: round-trip a task across the two
-        # HERMES_HOME perspectives via a real SQLite file. Without the
+        # ANYDEALS_HOME perspectives via a real SQLite file. Without the
         # fix the worker would open a different file and see no rows.
-        default_home = tmp_path / ".hermes"
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         profile_home = default_home / "profiles" / "nehemiahkanban"
         profile_home.mkdir(parents=True)
@@ -973,20 +973,20 @@ class TestSharedBoardPaths:
         with kb.connect() as conn:
             task_id = kb.create_task(conn, title="cross-profile")
 
-        # Worker switches to the profile HERMES_HOME and reads.
-        monkeypatch.setenv("HERMES_HOME", str(profile_home))
+        # Worker switches to the profile ANYDEALS_HOME and reads.
+        monkeypatch.setenv("ANYDEALS_HOME", str(profile_home))
         with kb.connect() as conn:
             task = kb.get_task(conn, task_id)
         assert task is not None
         assert task.title == "cross-profile"
 
-    def test_hermes_kanban_db_pin_beats_kanban_home(
+    def test_AnyDeals_kanban_db_pin_beats_kanban_home(
         self, tmp_path, monkeypatch
     ):
-        # HERMES_KANBAN_DB pins the file path directly and beats both
-        # HERMES_KANBAN_HOME and the `get_default_hermes_root()` path.
+        # ANYDEALS_KANBAN_DB pins the file path directly and beats both
+        # ANYDEALS_KANBAN_HOME and the `get_default_AnyDeals_root()` path.
         # This is the env the dispatcher injects into workers.
-        default_home = tmp_path / ".hermes"
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         umbrella = tmp_path / "umbrella"
         umbrella.mkdir()
@@ -994,20 +994,20 @@ class TestSharedBoardPaths:
         pinned_db.parent.mkdir()
 
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("HERMES_HOME", str(default_home))
-        monkeypatch.setenv("HERMES_KANBAN_HOME", str(umbrella))
-        monkeypatch.setenv("HERMES_KANBAN_DB", str(pinned_db))
+        monkeypatch.setenv("ANYDEALS_HOME", str(default_home))
+        monkeypatch.setenv("ANYDEALS_KANBAN_HOME", str(umbrella))
+        monkeypatch.setenv("ANYDEALS_KANBAN_DB", str(pinned_db))
 
         assert kb.kanban_db_path() == pinned_db
-        # workspaces_root still follows HERMES_KANBAN_HOME -- the pins
+        # workspaces_root still follows ANYDEALS_KANBAN_HOME -- the pins
         # are independent.
         assert kb.workspaces_root() == umbrella / "kanban" / "workspaces"
 
-    def test_hermes_kanban_workspaces_root_pin_beats_kanban_home(
+    def test_AnyDeals_kanban_workspaces_root_pin_beats_kanban_home(
         self, tmp_path, monkeypatch
     ):
-        # HERMES_KANBAN_WORKSPACES_ROOT pins the workspaces root directly.
-        default_home = tmp_path / ".hermes"
+        # ANYDEALS_KANBAN_WORKSPACES_ROOT pins the workspaces root directly.
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         umbrella = tmp_path / "umbrella"
         umbrella.mkdir()
@@ -1015,25 +1015,25 @@ class TestSharedBoardPaths:
         pinned_ws.mkdir()
 
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("HERMES_HOME", str(default_home))
-        monkeypatch.setenv("HERMES_KANBAN_HOME", str(umbrella))
-        monkeypatch.setenv("HERMES_KANBAN_WORKSPACES_ROOT", str(pinned_ws))
+        monkeypatch.setenv("ANYDEALS_HOME", str(default_home))
+        monkeypatch.setenv("ANYDEALS_KANBAN_HOME", str(umbrella))
+        monkeypatch.setenv("ANYDEALS_KANBAN_WORKSPACES_ROOT", str(pinned_ws))
 
         assert kb.workspaces_root() == pinned_ws
-        # kanban_db_path still follows HERMES_KANBAN_HOME.
+        # kanban_db_path still follows ANYDEALS_KANBAN_HOME.
         assert kb.kanban_db_path() == umbrella / "kanban.db"
 
     def test_empty_per_path_overrides_fall_through(
         self, tmp_path, monkeypatch
     ):
         # Empty/whitespace pins are treated as unset, same as
-        # HERMES_KANBAN_HOME.
-        default_home = tmp_path / ".hermes"
+        # ANYDEALS_KANBAN_HOME.
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
-        monkeypatch.setenv("HERMES_HOME", str(default_home))
-        monkeypatch.setenv("HERMES_KANBAN_DB", "   ")
-        monkeypatch.setenv("HERMES_KANBAN_WORKSPACES_ROOT", "")
+        monkeypatch.setenv("ANYDEALS_HOME", str(default_home))
+        monkeypatch.setenv("ANYDEALS_KANBAN_DB", "   ")
+        monkeypatch.setenv("ANYDEALS_KANBAN_WORKSPACES_ROOT", "")
 
         assert kb.kanban_db_path() == default_home / "kanban.db"
         assert kb.workspaces_root() == default_home / "kanban" / "workspaces"
@@ -1041,11 +1041,11 @@ class TestSharedBoardPaths:
     def test_dispatcher_spawn_injects_kanban_db_and_workspaces_root(
         self, tmp_path, monkeypatch
     ):
-        # The dispatcher's `_default_spawn` must inject HERMES_KANBAN_DB
-        # and HERMES_KANBAN_WORKSPACES_ROOT into the worker env so the
+        # The dispatcher's `_default_spawn` must inject ANYDEALS_KANBAN_DB
+        # and ANYDEALS_KANBAN_WORKSPACES_ROOT into the worker env so the
         # worker converges on the dispatcher's paths even when the
-        # `-p <profile>` flag rewrites HERMES_HOME.
-        default_home = tmp_path / ".hermes"
+        # `-p <profile>` flag rewrites ANYDEALS_HOME.
+        default_home = tmp_path / ".AnyDeals"
         default_home.mkdir()
         self._set_home(monkeypatch, tmp_path, default_home)
 
@@ -1079,11 +1079,11 @@ class TestSharedBoardPaths:
         kb._default_spawn(task, str(tmp_path / "ws"))
 
         env = captured["env"]
-        assert env["HERMES_KANBAN_DB"] == str(default_home / "kanban.db")
-        assert env["HERMES_KANBAN_WORKSPACES_ROOT"] == str(
+        assert env["ANYDEALS_KANBAN_DB"] == str(default_home / "kanban.db")
+        assert env["ANYDEALS_KANBAN_WORKSPACES_ROOT"] == str(
             default_home / "kanban" / "workspaces"
         )
-        assert env["HERMES_KANBAN_TASK"] == "t_dispatch_env"
+        assert env["ANYDEALS_KANBAN_TASK"] == "t_dispatch_env"
 
 
 # ---------------------------------------------------------------------------
@@ -1165,7 +1165,7 @@ def test_latest_summaries_batch_omits_tasks_without_summary(kanban_home):
 
 
 # ---------------------------------------------------------------------------
-# NFS / network-filesystem fallback (see hermes_state.apply_wal_with_fallback)
+# NFS / network-filesystem fallback (see AnyDeals_state.apply_wal_with_fallback)
 # ---------------------------------------------------------------------------
 
 def test_connect_falls_back_to_delete_on_locking_protocol(kanban_home, caplog):
@@ -1174,7 +1174,7 @@ def test_connect_falls_back_to_delete_on_locking_protocol(kanban_home, caplog):
     Without this fallback, the gateway's kanban dispatcher crashes every
     60s and the kanban migration (``consecutive_failures`` ADD COLUMN) is
     retried forever — which is what the real-world user report shows
-    (see hermes-agent issue #22032).
+    (see AnyDeals-agent issue #22032).
     """
     import sqlite3 as _sqlite3
     from unittest.mock import patch as _patch
@@ -1195,8 +1195,8 @@ def test_connect_falls_back_to_delete_on_locking_protocol(kanban_home, caplog):
             *args, factory=_WalBlockingConnection, **kwargs
         )
 
-    with _patch("hermes_cli.kanban_db.sqlite3.connect", side_effect=wal_blocking_connect):
-        with caplog.at_level("WARNING", logger="hermes_state"):
+    with _patch("AnyDeals_cli.kanban_db.sqlite3.connect", side_effect=wal_blocking_connect):
+        with caplog.at_level("WARNING", logger="AnyDeals_state"):
             conn = kb.connect()
 
     # One fallback warning, naming kanban.db
@@ -1223,7 +1223,7 @@ def test_unlink_tasks_triggers_recompute_ready(kanban_home):
     complete_task and unblock_task.
 
     Before the fix, child stayed 'todo' indefinitely after unlink; only the
-    next dispatcher tick or a manual 'hermes kanban recompute' would promote it.
+    next dispatcher tick or a manual 'AnyDeals kanban recompute' would promote it.
     """
     with kb.connect() as conn:
         # A is done.
@@ -1333,68 +1333,68 @@ def test_migrate_add_optional_columns_tolerates_concurrent_migration(kanban_home
 
 
 # ---------------------------------------------------------------------------
-# Dispatcher spawn invocation — _resolve_hermes_argv()
+# Dispatcher spawn invocation — _resolve_AnyDeals_argv()
 #
-# Workers spawned by the dispatcher must use a `hermes` invocation that does
+# Workers spawned by the dispatcher must use a `AnyDeals` invocation that does
 # not depend on PATH being set up correctly. cron jobs, systemd User= services,
 # launchd jobs, and other detached processes routinely run with a stripped
-# $PATH that doesn't include the venv's bin/, so a bare `["hermes", ...]`
+# $PATH that doesn't include the venv's bin/, so a bare `["AnyDeals", ...]`
 # spawn fails with FileNotFoundError and the task gets stuck. The resolver
 # prefers the PATH shim (familiar `ps` output) but falls back to the module
 # form so the spawn keeps working when PATH is missing the shim.
 # ---------------------------------------------------------------------------
 
 
-def test_resolve_hermes_argv_prefers_path_shim(monkeypatch):
-    """When `hermes` is on PATH, use the shim — preserves familiar ps output."""
+def test_resolve_AnyDeals_argv_prefers_path_shim(monkeypatch):
+    """When `AnyDeals` is on PATH, use the shim — preserves familiar ps output."""
     import shutil
-    import hermes_cli.kanban_db as kb
+    import AnyDeals_cli.kanban_db as kb
 
-    monkeypatch.setattr(shutil, "which", lambda name: "/usr/local/bin/hermes")
-    argv = kb._resolve_hermes_argv()
-    assert argv == ["/usr/local/bin/hermes"]
+    monkeypatch.setattr(shutil, "which", lambda name: "/usr/local/bin/AnyDeals")
+    argv = kb._resolve_AnyDeals_argv()
+    assert argv == ["/usr/local/bin/AnyDeals"]
 
 
-def test_resolve_hermes_argv_falls_back_to_module_form_when_no_path_shim(monkeypatch):
-    """When the shim is not on PATH, fall back to `python -m hermes_cli.main`.
+def test_resolve_AnyDeals_argv_falls_back_to_module_form_when_no_path_shim(monkeypatch):
+    """When the shim is not on PATH, fall back to `python -m AnyDeals_cli.main`.
 
-    Pins the correct module name (NOT `hermes` — there is no top-level
-    `hermes` package). Regression for #23198: the original PR shipped
-    `python -m hermes` which fails with `No module named hermes` on every
+    Pins the correct module name (NOT `AnyDeals` — there is no top-level
+    `AnyDeals` package). Regression for #23198: the original PR shipped
+    `python -m AnyDeals` which fails with `No module named AnyDeals` on every
     invocation.
     """
     import shutil
     import sys
-    import hermes_cli.kanban_db as kb
+    import AnyDeals_cli.kanban_db as kb
 
     monkeypatch.setattr(shutil, "which", lambda name: None)
-    argv = kb._resolve_hermes_argv()
-    assert argv == [sys.executable, "-m", "hermes_cli.main"]
+    argv = kb._resolve_AnyDeals_argv()
+    assert argv == [sys.executable, "-m", "AnyDeals_cli.main"]
 
 
-def test_resolve_hermes_argv_module_actually_runs():
+def test_resolve_AnyDeals_argv_module_actually_runs():
     """The fallback module name must be importable + runnable.
 
     A unit test that pins the literal string is necessary but not
-    sufficient — if `hermes_cli.main` ever loses `if __name__ == "__main__"`
-    handling or its argparse setup, `python -m hermes_cli.main --version`
+    sufficient — if `AnyDeals_cli.main` ever loses `if __name__ == "__main__"`
+    handling or its argparse setup, `python -m AnyDeals_cli.main --version`
     would fail and so would every dispatcher spawn that hits the fallback.
     Run it as a real subprocess to catch that regression.
     """
     import subprocess
     import sys
-    import hermes_cli.kanban_db as kb
+    import AnyDeals_cli.kanban_db as kb
     import shutil
     import unittest.mock as mock
 
     with mock.patch.object(shutil, "which", return_value=None):
-        argv = kb._resolve_hermes_argv()
+        argv = kb._resolve_AnyDeals_argv()
     r = subprocess.run(argv + ["--version"], capture_output=True, text=True, timeout=30)
     assert r.returncode == 0, (
         f"`{' '.join(argv)} --version` failed (rc={r.returncode}); "
         f"stderr={r.stderr[:200]!r}"
     )
-    assert "Hermes Agent" in r.stdout, f"unexpected output: {r.stdout[:200]!r}"
+    assert "Anydeals Agent" in r.stdout, f"unexpected output: {r.stdout[:200]!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -1502,9 +1502,9 @@ def test_task_dict_survives_corrupt_created_at(tmp_path, monkeypatch):
     corrupt row doesn't turn the whole board response into an error.
     """
     # Set up an isolated kanban home so we can write a corrupt created_at.
-    home = tmp_path / ".hermes"
+    home = tmp_path / ".AnyDeals"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("ANYDEALS_HOME", str(home))
     monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
     kb._INITIALIZED_PATHS.clear()
     kb.init_db()

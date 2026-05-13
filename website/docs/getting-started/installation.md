@@ -1,51 +1,51 @@
 ---
 sidebar_position: 2
 title: "Installation"
-description: "Install Hermes Agent on Linux, macOS, WSL2, native Windows (early beta), or Android via Termux"
+description: "Install Anydeals Agent on Linux, macOS, WSL2, native Windows (early beta), or Android via Termux"
 ---
 
 # Installation
 
-Get Hermes Agent up and running in under two minutes with the one-line installer.
+Get Anydeals Agent up and running in under two minutes with the one-line installer.
 
 ## Quick Install
 
 ### Linux / macOS / WSL2
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/AnyDeals-agent/main/scripts/install.sh | bash
 ```
 
 ### Windows (native, PowerShell) — Early Beta
 
 :::warning Early BETA
-Native Windows support is **early beta**. It installs and works for the common paths, but hasn't been road-tested as broadly as our POSIX installers. Please [file issues](https://github.com/NousResearch/hermes-agent/issues) when you hit rough edges. For the most battle-tested setup on Windows today, use the Linux/macOS one-liner above inside **WSL2** instead.
+Native Windows support is **early beta**. It installs and works for the common paths, but hasn't been road-tested as broadly as our POSIX installers. Please [file issues](https://github.com/NousResearch/AnyDeals-agent/issues) when you hit rough edges. For the most battle-tested setup on Windows today, use the Linux/macOS one-liner above inside **WSL2** instead.
 :::
 
 Open PowerShell and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/NousResearch/AnyDeals-agent/main/scripts/install.ps1 | iex
 ```
 
-The installer handles **everything**: `uv`, Python 3.11, Node.js 22, `ripgrep`, `ffmpeg`, **and a portable Git Bash** (PortableGit — a self-contained Git-for-Windows distribution that ships `bash.exe` and the full POSIX toolchain Hermes uses for shell commands; on 32-bit Windows the installer falls back to MinGit, which lacks bash and disables terminal-tool / agent-browser features).  It clones the repo under `%LOCALAPPDATA%\hermes\hermes-agent`, creates a virtualenv, and adds `hermes` to your **User PATH**.  Restart your terminal (or open a new PowerShell window) after the install so PATH picks up.
+The installer handles **everything**: `uv`, Python 3.11, Node.js 22, `ripgrep`, `ffmpeg`, **and a portable Git Bash** (PortableGit — a self-contained Git-for-Windows distribution that ships `bash.exe` and the full POSIX toolchain Anydeals uses for shell commands; on 32-bit Windows the installer falls back to MinGit, which lacks bash and disables terminal-tool / agent-browser features).  It clones the repo under `%LOCALAPPDATA%\AnyDeals\AnyDeals-agent`, creates a virtualenv, and adds `AnyDeals` to your **User PATH**.  Restart your terminal (or open a new PowerShell window) after the install so PATH picks up.
 
 **How Git is handled:**
 1. If `git` is already on your PATH, the installer uses your existing install.
-2. Otherwise it downloads portable **PortableGit** (~50MB, from the official `git-for-windows` GitHub release) and unpacks it to `%LOCALAPPDATA%\hermes\git`.  No admin rights required.  Completely isolated — it won't interfere with any system Git install, broken or otherwise.  (On 32-bit Windows it falls back to MinGit because PortableGit ships only 64-bit and ARM64 assets; bash-dependent Hermes features won't work on 32-bit hosts.)
+2. Otherwise it downloads portable **PortableGit** (~50MB, from the official `git-for-windows` GitHub release) and unpacks it to `%LOCALAPPDATA%\AnyDeals\git`.  No admin rights required.  Completely isolated — it won't interfere with any system Git install, broken or otherwise.  (On 32-bit Windows it falls back to MinGit because PortableGit ships only 64-bit and ARM64 assets; bash-dependent Anydeals features won't work on 32-bit hosts.)
 
-**Why not use winget?**  Earlier designs auto-installed Git via `winget install Git.Git`, but winget fails badly when a system Git install is in a partial or broken state (exactly when users need the installer to just work).  The portable Git approach sidesteps winget, the Windows installer registry, and any existing system Git entirely.  If the Hermes Git install itself ever breaks, `Remove-Item %LOCALAPPDATA%\hermes\git` and re-run the installer — no system impact, no uninstall drama.
+**Why not use winget?**  Earlier designs auto-installed Git via `winget install Git.Git`, but winget fails badly when a system Git install is in a partial or broken state (exactly when users need the installer to just work).  The portable Git approach sidesteps winget, the Windows installer registry, and any existing system Git entirely.  If the Anydeals Git install itself ever breaks, `Remove-Item %LOCALAPPDATA%\AnyDeals\git` and re-run the installer — no system impact, no uninstall drama.
 
-The installer also sets `HERMES_GIT_BASH_PATH` to the located `bash.exe` so Hermes resolves it deterministically in fresh shells.
+The installer also sets `ANYDEALS_GIT_BASH_PATH` to the located `bash.exe` so Anydeals resolves it deterministically in fresh shells.
 
-If you prefer WSL2, the Linux installer above works inside it; both native and WSL installs can coexist without conflict (native data lives under `%LOCALAPPDATA%\hermes`, WSL data lives under `~/.hermes`).
+If you prefer WSL2, the Linux installer above works inside it; both native and WSL installs can coexist without conflict (native data lives under `%LOCALAPPDATA%\AnyDeals`, WSL data lives under `~/.AnyDeals`).
 
 ### Android / Termux
 
-Hermes now ships a Termux-aware installer path too:
+Anydeals now ships a Termux-aware installer path too:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/AnyDeals-agent/main/scripts/install.sh | bash
 ```
 
 The installer detects Termux automatically and switches to a tested Android flow:
@@ -60,30 +60,30 @@ If you want the fully explicit path, follow the dedicated [Termux guide](./termu
 :::note Windows Feature Parity (Early Beta)
 
 Native Windows is in **early beta**. Everything except the browser-based dashboard chat terminal runs natively on Windows:
-- **CLI (`hermes chat`, `hermes setup`, `hermes gateway`, …)** — native, uses your default terminal
+- **CLI (`AnyDeals chat`, `AnyDeals setup`, `AnyDeals gateway`, …)** — native, uses your default terminal
 - **Gateway (Telegram, Discord, Slack, …)** — native, runs as a background PowerShell process
 - **Cron scheduler** — native
 - **Browser tool** — native (Chromium via Node.js)
 - **MCP servers** — native (stdio and HTTP transports both supported)
 - **Dashboard `/chat` terminal pane** — **WSL2 only** (uses a POSIX PTY; native Windows has no equivalent).  The rest of the dashboard (sessions, jobs, metrics) works natively — only the embedded PTY terminal tab is gated.
 
-Set `HERMES_DISABLE_WINDOWS_UTF8=1` in your environment if you hit an encoding-related bug and want to fall back to the legacy cp1252 stdio path (useful for bisecting).
+Set `ANYDEALS_DISABLE_WINDOWS_UTF8=1` in your environment if you hit an encoding-related bug and want to fall back to the legacy cp1252 stdio path (useful for bisecting).
 :::
 
 ### What the Installer Does
 
-The installer handles everything automatically — all dependencies (Python, Node.js, ripgrep, ffmpeg), the repo clone, virtual environment, global `hermes` command setup, and LLM provider configuration. By the end, you're ready to chat.
+The installer handles everything automatically — all dependencies (Python, Node.js, ripgrep, ffmpeg), the repo clone, virtual environment, global `AnyDeals` command setup, and LLM provider configuration. By the end, you're ready to chat.
 
 #### Install Layout
 
 Where the installer puts things depends on whether you're installing as a normal user or as root:
 
-| Installer | Code lives at | `hermes` binary | Data directory |
+| Installer | Code lives at | `AnyDeals` binary | Data directory |
 |---|---|---|---|
-| Per-user (normal) | `~/.hermes/hermes-agent/` | `~/.local/bin/hermes` (symlink) | `~/.hermes/` |
-| Root-mode (`sudo curl … \| sudo bash`) | `/usr/local/lib/hermes-agent/` | `/usr/local/bin/hermes` | `/root/.hermes/` (or `$HERMES_HOME`) |
+| Per-user (normal) | `~/.AnyDeals/AnyDeals-agent/` | `~/.local/bin/AnyDeals` (symlink) | `~/.AnyDeals/` |
+| Root-mode (`sudo curl … \| sudo bash`) | `/usr/local/lib/AnyDeals-agent/` | `/usr/local/bin/AnyDeals` | `/root/.AnyDeals/` (or `$ANYDEALS_HOME`) |
 
-The root-mode **FHS layout** (`/usr/local/lib/…`, `/usr/local/bin/hermes`) matches where other system-wide developer tools land on Linux. It's useful for shared-machine deployments where one system install should serve every user. Per-user config (auth, skills, sessions) still lives under each user's `~/.hermes/` or explicit `HERMES_HOME`.
+The root-mode **FHS layout** (`/usr/local/lib/…`, `/usr/local/bin/AnyDeals`) matches where other system-wide developer tools land on Linux. It's useful for shared-machine deployments where one system install should serve every user. Per-user config (auth, skills, sessions) still lives under each user's `~/.AnyDeals/` or explicit `ANYDEALS_HOME`.
 
 ### After Installation
 
@@ -91,17 +91,17 @@ Reload your shell and start chatting:
 
 ```bash
 source ~/.bashrc   # or: source ~/.zshrc
-hermes             # Start chatting!
+AnyDeals             # Start chatting!
 ```
 
 To reconfigure individual settings later, use the dedicated commands:
 
 ```bash
-hermes model          # Choose your LLM provider and model
-hermes tools          # Configure which tools are enabled
-hermes gateway setup  # Set up messaging platforms
-hermes config set     # Set individual config values
-hermes setup          # Or run the full setup wizard to configure everything at once
+AnyDeals model          # Choose your LLM provider and model
+AnyDeals tools          # Configure which tools are enabled
+AnyDeals gateway setup  # Set up messaging platforms
+AnyDeals config set     # Set individual config values
+AnyDeals setup          # Or run the full setup wizard to configure everything at once
 ```
 
 ---
@@ -136,8 +136,8 @@ If you want to clone the repo and install from source — for contributing, runn
 
 | Problem | Solution |
 |---------|----------|
-| `hermes: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
-| `API key not set` | Run `hermes model` to configure your provider, or `hermes config set OPENROUTER_API_KEY your_key` |
-| Missing config after update | Run `hermes config check` then `hermes config migrate` |
+| `AnyDeals: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
+| `API key not set` | Run `AnyDeals model` to configure your provider, or `AnyDeals config set OPENROUTER_API_KEY your_key` |
+| Missing config after update | Run `AnyDeals config check` then `AnyDeals config migrate` |
 
-For more diagnostics, run `hermes doctor` — it will tell you exactly what's missing and how to fix it.
+For more diagnostics, run `AnyDeals doctor` — it will tell you exactly what's missing and how to fix it.

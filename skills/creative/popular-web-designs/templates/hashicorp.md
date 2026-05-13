@@ -1,7 +1,7 @@
 # Design System: HashiCorp
 
 
-> **Hermes Agent — Implementation Notes**
+> **Anydeals Agent — Implementation Notes**
 >
 > The original site uses proprietary fonts. For self-contained HTML output, use these CDN substitutes:
 > - **Primary:** `Inter` | **Mono:** `JetBrains Mono`

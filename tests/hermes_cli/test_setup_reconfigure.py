@@ -1,10 +1,10 @@
 """Tests for the setup wizard's returning-user behavior.
 
 On an existing install:
-- Bare `hermes setup` drops straight into the full reconfigure wizard
+- Bare `AnyDeals setup` drops straight into the full reconfigure wizard
   (every prompt shows the current value as its default).
-- `hermes setup --quick` runs the narrower "fill in missing items" flow.
-- `hermes setup --reconfigure` is a backwards-compat alias for the
+- `AnyDeals setup --quick` runs the narrower "fill in missing items" flow.
+- `AnyDeals setup --reconfigure` is a backwards-compat alias for the
   bare-setup default.
 
 On a fresh install, all three are no-ops — fall through to first-time setup.
@@ -30,20 +30,20 @@ def _make_setup_args(**overrides):
 @pytest.fixture
 def existing_install(tmp_path, monkeypatch):
     """Simulate a returning user with an existing configured install."""
-    home = tmp_path / ".hermes"
+    home = tmp_path / ".AnyDeals"
     home.mkdir()
     monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("ANYDEALS_HOME", str(home))
     return home
 
 
 @pytest.fixture
 def fresh_install(tmp_path, monkeypatch):
     """Simulate a first-time user with no existing configuration."""
-    home = tmp_path / ".hermes"
+    home = tmp_path / ".AnyDeals"
     home.mkdir()
     monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("ANYDEALS_HOME", str(home))
     return home
 
 
@@ -55,16 +55,16 @@ def _enter_existing_install_patches(stack, **extra):
     """
     # Unconditional mocks (no return values to assert against).
     for target, kwargs in [
-        ("hermes_cli.setup.ensure_hermes_home", {}),
-        ("hermes_cli.setup.is_interactive_stdin", {"return_value": True}),
-        ("hermes_cli.config.is_managed", {"return_value": False}),
-        ("hermes_cli.setup.load_config", {"return_value": {}}),
-        ("hermes_cli.setup.save_config", {}),
-        ("hermes_cli.setup.get_env_value", {"return_value": None}),
-        ("hermes_cli.auth.get_active_provider", {"return_value": "openrouter"}),
-        ("hermes_cli.setup._print_setup_summary", {}),
-        ("hermes_cli.setup._offer_launch_chat", {}),
-        ("hermes_cli.setup._offer_openclaw_migration", {"return_value": False}),
+        ("AnyDeals_cli.setup.ensure_AnyDeals_home", {}),
+        ("AnyDeals_cli.setup.is_interactive_stdin", {"return_value": True}),
+        ("AnyDeals_cli.config.is_managed", {"return_value": False}),
+        ("AnyDeals_cli.setup.load_config", {"return_value": {}}),
+        ("AnyDeals_cli.setup.save_config", {}),
+        ("AnyDeals_cli.setup.get_env_value", {"return_value": None}),
+        ("AnyDeals_cli.auth.get_active_provider", {"return_value": "openrouter"}),
+        ("AnyDeals_cli.setup._print_setup_summary", {}),
+        ("AnyDeals_cli.setup._offer_launch_chat", {}),
+        ("AnyDeals_cli.setup._offer_openclaw_migration", {"return_value": False}),
     ]:
         stack.enter_context(patch(target, **kwargs))
 
@@ -77,14 +77,14 @@ def _enter_existing_install_patches(stack, **extra):
 
 def _enter_fresh_install_patches(stack, **extra):
     for target, kwargs in [
-        ("hermes_cli.setup.ensure_hermes_home", {}),
-        ("hermes_cli.setup.is_interactive_stdin", {"return_value": True}),
-        ("hermes_cli.config.is_managed", {"return_value": False}),
-        ("hermes_cli.setup.load_config", {"return_value": {}}),
-        ("hermes_cli.setup.save_config", {}),
-        ("hermes_cli.auth.get_active_provider", {"return_value": None}),
-        ("hermes_cli.setup.get_env_value", {"return_value": None}),
-        ("hermes_cli.setup._offer_openclaw_migration", {"return_value": False}),
+        ("AnyDeals_cli.setup.ensure_AnyDeals_home", {}),
+        ("AnyDeals_cli.setup.is_interactive_stdin", {"return_value": True}),
+        ("AnyDeals_cli.config.is_managed", {"return_value": False}),
+        ("AnyDeals_cli.setup.load_config", {"return_value": {}}),
+        ("AnyDeals_cli.setup.save_config", {}),
+        ("AnyDeals_cli.auth.get_active_provider", {"return_value": None}),
+        ("AnyDeals_cli.setup.get_env_value", {"return_value": None}),
+        ("AnyDeals_cli.setup._offer_openclaw_migration", {"return_value": False}),
     ]:
         stack.enter_context(patch(target, **kwargs))
 
@@ -99,7 +99,7 @@ def _enter_fresh_install_patches(stack, **extra):
 
 
 class TestExistingInstallDefault:
-    """Bare `hermes setup` on an existing install = full reconfigure wizard."""
+    """Bare `AnyDeals setup` on an existing install = full reconfigure wizard."""
 
     def test_bare_setup_runs_full_reconfigure_without_menu(self, existing_install):
         """No menu, no prompt_choice — just run every section in sequence."""
@@ -108,15 +108,15 @@ class TestExistingInstallDefault:
         with ExitStack() as stack:
             m = _enter_existing_install_patches(
                 stack,
-                prompt_choice="hermes_cli.setup.prompt_choice",
-                quick="hermes_cli.setup._run_quick_setup",
-                model="hermes_cli.setup.setup_model_provider",
-                terminal="hermes_cli.setup.setup_terminal_backend",
-                agent="hermes_cli.setup.setup_agent_settings",
-                gateway="hermes_cli.setup.setup_gateway",
-                tools="hermes_cli.setup.setup_tools",
+                prompt_choice="AnyDeals_cli.setup.prompt_choice",
+                quick="AnyDeals_cli.setup._run_quick_setup",
+                model="AnyDeals_cli.setup.setup_model_provider",
+                terminal="AnyDeals_cli.setup.setup_terminal_backend",
+                agent="AnyDeals_cli.setup.setup_agent_settings",
+                gateway="AnyDeals_cli.setup.setup_gateway",
+                tools="AnyDeals_cli.setup.setup_tools",
             )
-            from hermes_cli.setup import run_setup_wizard
+            from AnyDeals_cli.setup import run_setup_wizard
             run_setup_wizard(args)
 
         # No menu shown.
@@ -131,20 +131,20 @@ class TestExistingInstallDefault:
         m["tools"].assert_called_once()
 
     def test_reconfigure_flag_is_backwards_compat_noop(self, existing_install):
-        """`hermes setup --reconfigure` behaves the same as bare `hermes setup`."""
+        """`AnyDeals setup --reconfigure` behaves the same as bare `AnyDeals setup`."""
         args = _make_setup_args(reconfigure=True)
 
         with ExitStack() as stack:
             m = _enter_existing_install_patches(
                 stack,
-                prompt_choice="hermes_cli.setup.prompt_choice",
-                model="hermes_cli.setup.setup_model_provider",
-                terminal="hermes_cli.setup.setup_terminal_backend",
-                agent="hermes_cli.setup.setup_agent_settings",
-                gateway="hermes_cli.setup.setup_gateway",
-                tools="hermes_cli.setup.setup_tools",
+                prompt_choice="AnyDeals_cli.setup.prompt_choice",
+                model="AnyDeals_cli.setup.setup_model_provider",
+                terminal="AnyDeals_cli.setup.setup_terminal_backend",
+                agent="AnyDeals_cli.setup.setup_agent_settings",
+                gateway="AnyDeals_cli.setup.setup_gateway",
+                tools="AnyDeals_cli.setup.setup_tools",
             )
-            from hermes_cli.setup import run_setup_wizard
+            from AnyDeals_cli.setup import run_setup_wizard
             run_setup_wizard(args)
 
         m["prompt_choice"].assert_not_called()
@@ -164,14 +164,14 @@ class TestQuickFlag:
         with ExitStack() as stack:
             m = _enter_existing_install_patches(
                 stack,
-                quick="hermes_cli.setup._run_quick_setup",
-                model="hermes_cli.setup.setup_model_provider",
-                terminal="hermes_cli.setup.setup_terminal_backend",
-                agent="hermes_cli.setup.setup_agent_settings",
-                gateway="hermes_cli.setup.setup_gateway",
-                tools="hermes_cli.setup.setup_tools",
+                quick="AnyDeals_cli.setup._run_quick_setup",
+                model="AnyDeals_cli.setup.setup_model_provider",
+                terminal="AnyDeals_cli.setup.setup_terminal_backend",
+                agent="AnyDeals_cli.setup.setup_agent_settings",
+                gateway="AnyDeals_cli.setup.setup_gateway",
+                tools="AnyDeals_cli.setup.setup_tools",
             )
-            from hermes_cli.setup import run_setup_wizard
+            from AnyDeals_cli.setup import run_setup_wizard
             run_setup_wizard(args)
 
         m["quick"].assert_called_once()
@@ -192,10 +192,10 @@ class TestFreshInstall:
         with ExitStack() as stack:
             m = _enter_fresh_install_patches(
                 stack,
-                prompt=("hermes_cli.setup.prompt_choice", {"return_value": 0}),
-                first="hermes_cli.setup._run_first_time_quick_setup",
+                prompt=("AnyDeals_cli.setup.prompt_choice", {"return_value": 0}),
+                first="AnyDeals_cli.setup._run_first_time_quick_setup",
             )
-            from hermes_cli.setup import run_setup_wizard
+            from AnyDeals_cli.setup import run_setup_wizard
             run_setup_wizard(args)
 
         m["prompt"].assert_called_once()  # quick-vs-full prompt
@@ -207,10 +207,10 @@ class TestFreshInstall:
         with ExitStack() as stack:
             m = _enter_fresh_install_patches(
                 stack,
-                prompt=("hermes_cli.setup.prompt_choice", {"return_value": 0}),
-                first="hermes_cli.setup._run_first_time_quick_setup",
+                prompt=("AnyDeals_cli.setup.prompt_choice", {"return_value": 0}),
+                first="AnyDeals_cli.setup._run_first_time_quick_setup",
             )
-            from hermes_cli.setup import run_setup_wizard
+            from AnyDeals_cli.setup import run_setup_wizard
             run_setup_wizard(args)
 
         m["prompt"].assert_called_once()
@@ -222,10 +222,10 @@ class TestFreshInstall:
         with ExitStack() as stack:
             m = _enter_fresh_install_patches(
                 stack,
-                prompt=("hermes_cli.setup.prompt_choice", {"return_value": 0}),
-                first="hermes_cli.setup._run_first_time_quick_setup",
+                prompt=("AnyDeals_cli.setup.prompt_choice", {"return_value": 0}),
+                first="AnyDeals_cli.setup._run_first_time_quick_setup",
             )
-            from hermes_cli.setup import run_setup_wizard
+            from AnyDeals_cli.setup import run_setup_wizard
             run_setup_wizard(args)
 
         m["prompt"].assert_called_once()
@@ -237,14 +237,14 @@ class TestArgparse:
 
     def test_reconfigure_flag_reaches_cmd_setup(self, monkeypatch):
         import sys
-        from hermes_cli.main import main
+        from AnyDeals_cli.main import main
 
         captured = {}
         monkeypatch.setattr(
-            "hermes_cli.setup.run_setup_wizard",
+            "AnyDeals_cli.setup.run_setup_wizard",
             lambda args: captured.setdefault("args", args),
         )
-        monkeypatch.setattr(sys, "argv", ["hermes", "setup", "--reconfigure"])
+        monkeypatch.setattr(sys, "argv", ["AnyDeals", "setup", "--reconfigure"])
         try:
             main()
         except SystemExit:
@@ -254,14 +254,14 @@ class TestArgparse:
 
     def test_quick_flag_reaches_cmd_setup(self, monkeypatch):
         import sys
-        from hermes_cli.main import main
+        from AnyDeals_cli.main import main
 
         captured = {}
         monkeypatch.setattr(
-            "hermes_cli.setup.run_setup_wizard",
+            "AnyDeals_cli.setup.run_setup_wizard",
             lambda args: captured.setdefault("args", args),
         )
-        monkeypatch.setattr(sys, "argv", ["hermes", "setup", "--quick"])
+        monkeypatch.setattr(sys, "argv", ["AnyDeals", "setup", "--quick"])
         try:
             main()
         except SystemExit:
@@ -271,14 +271,14 @@ class TestArgparse:
 
     def test_bare_setup_has_both_flags_false(self, monkeypatch):
         import sys
-        from hermes_cli.main import main
+        from AnyDeals_cli.main import main
 
         captured = {}
         monkeypatch.setattr(
-            "hermes_cli.setup.run_setup_wizard",
+            "AnyDeals_cli.setup.run_setup_wizard",
             lambda args: captured.setdefault("args", args),
         )
-        monkeypatch.setattr(sys, "argv", ["hermes", "setup"])
+        monkeypatch.setattr(sys, "argv", ["AnyDeals", "setup"])
         try:
             main()
         except SystemExit:

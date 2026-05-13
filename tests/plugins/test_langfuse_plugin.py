@@ -34,9 +34,9 @@ class TestManifest:
             "pre_llm_call", "post_llm_call",
             "pre_tool_call", "post_tool_call",
         }
-        # Required env vars are the user-facing HERMES_ prefixed keys.
-        assert "HERMES_LANGFUSE_PUBLIC_KEY" in data["requires_env"]
-        assert "HERMES_LANGFUSE_SECRET_KEY" in data["requires_env"]
+        # Required env vars are the user-facing ANYDEALS_ prefixed keys.
+        assert "ANYDEALS_LANGFUSE_PUBLIC_KEY" in data["requires_env"]
+        assert "ANYDEALS_LANGFUSE_SECRET_KEY" in data["requires_env"]
 
 
 # ---------------------------------------------------------------------------
@@ -48,12 +48,12 @@ class TestManifest:
 class TestDiscovery:
     def test_plugin_is_discovered_as_standalone_opt_in(self, tmp_path, monkeypatch):
         """Scanner should find the plugin but NOT load it by default."""
-        from hermes_cli import plugins as plugins_mod
+        from AnyDeals_cli import plugins as plugins_mod
 
-        # Isolated HERMES_HOME so we don't read the developer's config.yaml.
-        home = tmp_path / ".hermes"
+        # Isolated ANYDEALS_HOME so we don't read the developer's config.yaml.
+        home = tmp_path / ".AnyDeals"
         home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(home))
+        monkeypatch.setenv("ANYDEALS_HOME", str(home))
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
         manager = plugins_mod.PluginManager()
@@ -82,7 +82,7 @@ class TestRuntimeGate:
 
     def test_get_langfuse_returns_none_without_credentials(self, monkeypatch):
         for k in (
-            "HERMES_LANGFUSE_PUBLIC_KEY", "HERMES_LANGFUSE_SECRET_KEY",
+            "ANYDEALS_LANGFUSE_PUBLIC_KEY", "ANYDEALS_LANGFUSE_SECRET_KEY",
             "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY",
         ):
             monkeypatch.delenv(k, raising=False)
@@ -93,7 +93,7 @@ class TestRuntimeGate:
     def test_get_langfuse_caches_failure_no_config_load(self, monkeypatch):
         """A miss must be cached — no per-hook config.yaml reads, no env re-reads."""
         for k in (
-            "HERMES_LANGFUSE_PUBLIC_KEY", "HERMES_LANGFUSE_SECRET_KEY",
+            "ANYDEALS_LANGFUSE_PUBLIC_KEY", "ANYDEALS_LANGFUSE_SECRET_KEY",
             "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY",
         ):
             monkeypatch.delenv(k, raising=False)
@@ -110,7 +110,7 @@ class TestRuntimeGate:
         real_get = os.environ.get
 
         def tracking_get(key, default=None):
-            if key.startswith(("HERMES_LANGFUSE_", "LANGFUSE_")):
+            if key.startswith(("ANYDEALS_LANGFUSE_", "LANGFUSE_")):
                 called["n"] += 1
             return real_get(key, default)
 
@@ -124,23 +124,23 @@ class TestRuntimeGate:
             "it should short-circuit via _INIT_FAILED"
         )
 
-    def test_get_langfuse_does_not_import_hermes_config(self, monkeypatch):
+    def test_get_langfuse_does_not_import_AnyDeals_config(self, monkeypatch):
         """The plugin must not re-read config.yaml per hook."""
         for k in (
-            "HERMES_LANGFUSE_PUBLIC_KEY", "HERMES_LANGFUSE_SECRET_KEY",
+            "ANYDEALS_LANGFUSE_PUBLIC_KEY", "ANYDEALS_LANGFUSE_SECRET_KEY",
             "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY",
         ):
             monkeypatch.delenv(k, raising=False)
 
-        # Drop any cached import of hermes_cli.config.
-        sys.modules.pop("hermes_cli.config", None)
+        # Drop any cached import of AnyDeals_cli.config.
+        sys.modules.pop("AnyDeals_cli.config", None)
 
         langfuse_plugin = self._fresh_plugin()
         for _ in range(20):
             langfuse_plugin._get_langfuse()
 
-        assert "hermes_cli.config" not in sys.modules, (
-            "langfuse plugin imported hermes_cli.config — regression toward "
+        assert "AnyDeals_cli.config" not in sys.modules, (
+            "langfuse plugin imported AnyDeals_cli.config — regression toward "
             "the rejected per-hook load_config() design"
         )
 
@@ -153,7 +153,7 @@ class TestHooksInert:
     def test_hooks_noop_without_client(self, monkeypatch):
         """All 6 hooks must return without raising when _get_langfuse() is None."""
         for k in (
-            "HERMES_LANGFUSE_PUBLIC_KEY", "HERMES_LANGFUSE_SECRET_KEY",
+            "ANYDEALS_LANGFUSE_PUBLIC_KEY", "ANYDEALS_LANGFUSE_SECRET_KEY",
             "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY",
         ):
             monkeypatch.delenv(k, raising=False)

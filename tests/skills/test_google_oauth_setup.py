@@ -258,67 +258,67 @@ class TestExchangeAuthCode:
         assert not setup_module.PENDING_AUTH_PATH.exists()
 
 
-class TestHermesConstantsFallback:
-    """Tests for _hermes_home.py fallback when hermes_constants is unavailable."""
+class TestAnydealsConstantsFallback:
+    """Tests for _AnyDeals_home.py fallback when AnyDeals_constants is unavailable."""
 
     HELPER_PATH = (
         Path(__file__).resolve().parents[2]
-        / "skills/productivity/google-workspace/scripts/_hermes_home.py"
+        / "skills/productivity/google-workspace/scripts/_AnyDeals_home.py"
     )
 
     def _load_helper(self, monkeypatch):
-        """Load _hermes_home.py with hermes_constants blocked."""
-        monkeypatch.setitem(sys.modules, "hermes_constants", None)
-        spec = importlib.util.spec_from_file_location("_hermes_home_test", self.HELPER_PATH)
+        """Load _AnyDeals_home.py with AnyDeals_constants blocked."""
+        monkeypatch.setitem(sys.modules, "AnyDeals_constants", None)
+        spec = importlib.util.spec_from_file_location("_AnyDeals_home_test", self.HELPER_PATH)
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
         return module
 
-    def test_fallback_uses_hermes_home_env_var(self, monkeypatch, tmp_path):
-        """When hermes_constants is missing, HERMES_HOME comes from env var."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / "custom-hermes"))
+    def test_fallback_uses_AnyDeals_home_env_var(self, monkeypatch, tmp_path):
+        """When AnyDeals_constants is missing, ANYDEALS_HOME comes from env var."""
+        monkeypatch.setenv("ANYDEALS_HOME", str(tmp_path / "custom-AnyDeals"))
         module = self._load_helper(monkeypatch)
-        assert module.get_hermes_home() == tmp_path / "custom-hermes"
+        assert module.get_AnyDeals_home() == tmp_path / "custom-AnyDeals"
 
-    def test_fallback_defaults_to_dot_hermes(self, monkeypatch):
-        """When hermes_constants is missing and HERMES_HOME unset, default to ~/.hermes."""
-        monkeypatch.delenv("HERMES_HOME", raising=False)
+    def test_fallback_defaults_to_dot_AnyDeals(self, monkeypatch):
+        """When AnyDeals_constants is missing and ANYDEALS_HOME unset, default to ~/.AnyDeals."""
+        monkeypatch.delenv("ANYDEALS_HOME", raising=False)
         module = self._load_helper(monkeypatch)
-        assert module.get_hermes_home() == Path.home() / ".hermes"
+        assert module.get_AnyDeals_home() == Path.home() / ".AnyDeals"
 
-    def test_fallback_ignores_empty_hermes_home(self, monkeypatch):
-        """Empty/whitespace HERMES_HOME is treated as unset."""
-        monkeypatch.setenv("HERMES_HOME", "  ")
+    def test_fallback_ignores_empty_AnyDeals_home(self, monkeypatch):
+        """Empty/whitespace ANYDEALS_HOME is treated as unset."""
+        monkeypatch.setenv("ANYDEALS_HOME", "  ")
         module = self._load_helper(monkeypatch)
-        assert module.get_hermes_home() == Path.home() / ".hermes"
+        assert module.get_AnyDeals_home() == Path.home() / ".AnyDeals"
 
-    def test_fallback_display_hermes_home_shortens_path(self, monkeypatch):
-        """Fallback display_hermes_home() uses ~/ shorthand like the real one."""
-        monkeypatch.delenv("HERMES_HOME", raising=False)
+    def test_fallback_display_AnyDeals_home_shortens_path(self, monkeypatch):
+        """Fallback display_AnyDeals_home() uses ~/ shorthand like the real one."""
+        monkeypatch.delenv("ANYDEALS_HOME", raising=False)
         module = self._load_helper(monkeypatch)
-        assert module.display_hermes_home() == "~/.hermes"
+        assert module.display_AnyDeals_home() == "~/.AnyDeals"
 
-    def test_fallback_display_hermes_home_profile_path(self, monkeypatch):
-        """Fallback display_hermes_home() handles profile paths under ~/."""
-        monkeypatch.setenv("HERMES_HOME", str(Path.home() / ".hermes/profiles/coder"))
+    def test_fallback_display_AnyDeals_home_profile_path(self, monkeypatch):
+        """Fallback display_AnyDeals_home() handles profile paths under ~/."""
+        monkeypatch.setenv("ANYDEALS_HOME", str(Path.home() / ".AnyDeals/profiles/coder"))
         module = self._load_helper(monkeypatch)
-        assert module.display_hermes_home() == "~/.hermes/profiles/coder"
+        assert module.display_AnyDeals_home() == "~/.AnyDeals/profiles/coder"
 
-    def test_fallback_display_hermes_home_custom_path(self, monkeypatch):
-        """Fallback display_hermes_home() returns full path for non-home locations."""
-        monkeypatch.setenv("HERMES_HOME", "/opt/hermes-custom")
+    def test_fallback_display_AnyDeals_home_custom_path(self, monkeypatch):
+        """Fallback display_AnyDeals_home() returns full path for non-home locations."""
+        monkeypatch.setenv("ANYDEALS_HOME", "/opt/AnyDeals-custom")
         module = self._load_helper(monkeypatch)
-        assert module.display_hermes_home() == "/opt/hermes-custom"
+        assert module.display_AnyDeals_home() == "/opt/AnyDeals-custom"
 
-    def test_delegates_to_hermes_constants_when_available(self):
-        """When hermes_constants IS importable, _hermes_home delegates to it."""
+    def test_delegates_to_AnyDeals_constants_when_available(self):
+        """When AnyDeals_constants IS importable, _AnyDeals_home delegates to it."""
         spec = importlib.util.spec_from_file_location(
-            "_hermes_home_happy", self.HELPER_PATH
+            "_AnyDeals_home_happy", self.HELPER_PATH
         )
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
-        import hermes_constants
-        assert module.get_hermes_home is hermes_constants.get_hermes_home
-        assert module.display_hermes_home is hermes_constants.display_hermes_home
+        import AnyDeals_constants
+        assert module.get_AnyDeals_home is AnyDeals_constants.get_AnyDeals_home
+        assert module.display_AnyDeals_home is AnyDeals_constants.display_AnyDeals_home

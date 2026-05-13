@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SQLite State Store for Hermes Agent.
+SQLite State Store for Anydeals Agent.
 
 Provides persistent session storage with FTS5 full-text search, replacing
 the per-session JSONL file approach. Stores session metadata, full message
@@ -24,14 +24,14 @@ import time
 from pathlib import Path
 
 from agent.memory_manager import sanitize_context
-from hermes_constants import get_hermes_home
+from AnyDeals_constants import get_AnyDeals_home
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
-DEFAULT_DB_PATH = get_hermes_home() / "state.db"
+DEFAULT_DB_PATH = get_AnyDeals_home() / "state.db"
 
 SCHEMA_VERSION = 11
 
@@ -68,7 +68,7 @@ _last_init_error_lock = threading.Lock()
 
 # Paths for which we've already logged a WAL-fallback WARNING.  Without
 # this, kanban_db.connect() (called on every kanban operation — see
-# hermes_cli/kanban_db.py for ~30 call sites) would re-log the same
+# AnyDeals_cli/kanban_db.py for ~30 call sites) would re-log the same
 # filesystem-incompat warning on every connection, filling errors.log.
 _wal_fallback_warned_paths: set[str] = set()
 _wal_fallback_warned_lock = threading.Lock()
@@ -145,7 +145,7 @@ def apply_wal_with_fallback(
     Different db_labels log independently, so state.db and kanban.db
     each get one warning on the same NFS mount.
 
-    Shared by :class:`SessionDB` and ``hermes_cli.kanban_db.connect`` so
+    Shared by :class:`SessionDB` and ``AnyDeals_cli.kanban_db.connect`` so
     both databases get identical fallback behavior.
     """
     try:
@@ -165,7 +165,7 @@ def _log_wal_fallback_once(db_label: str, exc: Exception) -> None:
     """Log a single WARNING per (process, db_label) about WAL fallback.
 
     Without this dedup, NFS users running kanban (which opens a fresh
-    connection on every operation — see hermes_cli/kanban_db.py) would
+    connection on every operation — see AnyDeals_cli/kanban_db.py) would
     fill errors.log with hundreds of identical warnings per hour.
     """
     with _wal_fallback_warned_lock:
@@ -315,7 +315,7 @@ class SessionDB:
     """
 
     # ── Write-contention tuning ──
-    # With multiple hermes processes (gateway + CLI sessions + worktree agents)
+    # With multiple AnyDeals processes (gateway + CLI sessions + worktree agents)
     # all sharing one state.db, WAL write-lock contention causes visible TUI
     # freezes.  SQLite's built-in busy handler uses a deterministic sleep
     # schedule that causes convoy effects under high concurrency.
@@ -366,7 +366,7 @@ class SessionDB:
             # successful open racing past this failure would erase the
             # cause that another thread's /resume is about to format.
             # Tests that need to reset the state can call
-            # ``hermes_state._set_last_init_error(None)`` explicitly.
+            # ``AnyDeals_state._set_last_init_error(None)`` explicitly.
             _set_last_init_error(f"{type(exc).__name__}: {exc}")
             raise
 
@@ -2388,7 +2388,7 @@ class SessionDB:
         """Create Telegram DM topic-mode tables on explicit /topic opt-in.
 
         This migration is deliberately not part of automatic SessionDB startup
-        reconciliation. Operators must be able to upgrade Hermes, keep the old
+        reconciliation. Operators must be able to upgrade Anydeals, keep the old
         Telegram bot behavior running, and only mutate topic-mode state when the
         user executes /topic to opt into the feature.
 
@@ -2614,9 +2614,9 @@ class SessionDB:
         session_id: str,
         managed_mode: str = "auto",
     ) -> None:
-        """Bind one Telegram DM topic thread to one Hermes session.
+        """Bind one Telegram DM topic thread to one Anydeals session.
 
-        A Hermes session may only be linked to one Telegram topic in MVP.
+        A Anydeals session may only be linked to one Telegram topic in MVP.
         Rebinding the same topic to the same session is idempotent; trying to
         link the same session to a different topic raises ValueError.
         """
@@ -2669,7 +2669,7 @@ class SessionDB:
         self._execute_write(_do)
 
     def is_telegram_session_linked_to_topic(self, *, session_id: str) -> bool:
-        """Return True if a Hermes session is already bound to any Telegram DM topic.
+        """Return True if a Anydeals session is already bound to any Telegram DM topic.
 
         Read-only: does NOT trigger the telegram-topic migration. If the
         topic-mode tables have not been created yet (i.e. nobody has run

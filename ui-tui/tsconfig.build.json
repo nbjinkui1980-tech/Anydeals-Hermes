@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@hermes/ink": ["src/types/hermes-ink.d.ts"]
+      "@AnyDeals/ink": ["src/types/AnyDeals-ink.d.ts"]
     }
   }
 }

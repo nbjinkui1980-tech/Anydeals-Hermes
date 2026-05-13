@@ -1,1 +1,1 @@
-# Hermes plugins package
+# Anydeals plugins package

@@ -338,13 +338,13 @@ class TestTeamsPluginRegistration:
 class TestTeamsInteractiveSetup:
     def test_interactive_setup_persists_credentials(self, tmp_path, monkeypatch):
         """Regression for #19173: interactive_setup must import prompt helpers
-        from hermes_cli.cli_output (not hermes_cli.config) and persist
+        from AnyDeals_cli.cli_output (not AnyDeals_cli.config) and persist
         credentials to .env without crashing.
         """
-        hermes_home = tmp_path / "hermes"
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        AnyDeals_home = tmp_path / "AnyDeals"
+        monkeypatch.setenv("ANYDEALS_HOME", str(AnyDeals_home))
 
-        import hermes_cli.cli_output as cli_output_mod
+        import AnyDeals_cli.cli_output as cli_output_mod
 
         answers = iter(["client-id", "client-secret", "tenant-id", "aad-1, aad-2"])
         monkeypatch.setattr(cli_output_mod, "prompt", lambda *_a, **_kw: next(answers))
@@ -355,7 +355,7 @@ class TestTeamsInteractiveSetup:
 
         _teams_mod.interactive_setup()
 
-        env_text = (hermes_home / ".env").read_text(encoding="utf-8")
+        env_text = (AnyDeals_home / ".env").read_text(encoding="utf-8")
         assert "TEAMS_CLIENT_ID=client-id" in env_text
         assert "TEAMS_TENANT_ID=tenant-id" in env_text
 
@@ -679,7 +679,7 @@ class TestTeamsMessageHandling:
         adapter.handle_message = AsyncMock()
 
         activity = self._make_activity(
-            text="<at>Hermes</at> what is the weather?",
+            text="<at>Anydeals</at> what is the weather?",
             from_id="user-id",
         )
         await adapter._on_message(self._make_ctx(activity))
