@@ -1,0 +1,4 @@
+[console_scripts]
+AnyDeals = AnyDeals_cli.main:main
+AnyDeals-acp = acp_adapter.entry:main
+AnyDeals-agent = run_agent:main
