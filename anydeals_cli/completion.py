@@ -238,7 +238,7 @@ _AnyDeals() {{
     esac
 }}
 
-_AnyDeals "$@"
+compdef _AnyDeals AnyDeals
 """
 
 

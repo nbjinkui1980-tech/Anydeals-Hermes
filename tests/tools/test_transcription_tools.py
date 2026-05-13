@@ -1372,7 +1372,7 @@ class TestShellSafety:
     def test_auto_detected_template_is_shlex_safe(self, monkeypatch):
         """Auto-detected whisper command should be safely splittable."""
         import shlex
-        monkeypatch.delenv("HERMES_LOCAL_STT_COMMAND", raising=False)
+        monkeypatch.delenv("ANYDEALS_LOCAL_STT_COMMAND", raising=False)
         monkeypatch.setattr(
             "tools.transcription_tools._find_whisper_binary",
             lambda: "/usr/bin/whisper",
@@ -1391,7 +1391,7 @@ class TestShellSafety:
         assert "/tmp/test.wav" in parts
 
     def test_env_var_template_uses_shell_path(self, monkeypatch):
-        """When HERMES_LOCAL_STT_COMMAND is set, use_shell should be True."""
+        """When ANYDEALS_LOCAL_STT_COMMAND is set, use_shell should be True."""
         import os
         from tools.transcription_tools import LOCAL_STT_COMMAND_ENV
         monkeypatch.setenv(LOCAL_STT_COMMAND_ENV, "whisper {input_path} | tee log.txt")

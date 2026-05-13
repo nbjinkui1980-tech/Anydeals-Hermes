@@ -1,0 +1,546 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1778697218601,
+  "projectRoot": "/Users/jinkui/Anydeals-Hermes/Anydeals-Hermes",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": ">=20.0.0",
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "fastapi",
+        "version": null,
+        "category": "backend"
+      },
+      {
+        "name": "pytest",
+        "version": null,
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": "Node.js 20.0.0"
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "source .venv/bin/activate && python -m pytest -q tests/AnyDeals_cli/test_completion.py 2>&1",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {
+      "postinstall": "echo '✅ Browser tools ready. Run: python run_agent.py --help'"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "docs",
+      "scripts",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "AnyDeals.egg-info": {
+      "path": "AnyDeals.egg-info",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1778697218594,
+      "keyFiles": [
+        "PKG-INFO",
+        "SOURCES.txt",
+        "dependency_links.txt",
+        "entry_points.txt",
+        "requires.txt"
+      ]
+    },
+    "AnyDeals_cli": {
+      "path": "AnyDeals_cli",
+      "purpose": null,
+      "fileCount": 75,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "__init__.py",
+        "_parser.py",
+        "_subprocess_compat.py",
+        "auth.py",
+        "auth_commands.py"
+      ]
+    },
+    "__pycache__": {
+      "path": "__pycache__",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "AnyDeals_bootstrap.cpython-313.pyc",
+        "AnyDeals_constants.cpython-313.pyc",
+        "AnyDeals_logging.cpython-313.pyc",
+        "AnyDeals_time.cpython-313.pyc",
+        "model_tools.cpython-313.pyc"
+      ]
+    },
+    "acp_adapter": {
+      "path": "acp_adapter",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "__init__.py",
+        "__main__.py",
+        "auth.py",
+        "entry.py",
+        "events.py"
+      ]
+    },
+    "acp_registry": {
+      "path": "acp_registry",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "agent.json",
+        "icon.svg"
+      ]
+    },
+    "agent": {
+      "path": "agent",
+      "purpose": null,
+      "fileCount": 55,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "__init__.py",
+        "account_usage.py",
+        "anthropic_adapter.py",
+        "auxiliary_client.py",
+        "bedrock_adapter.py"
+      ]
+    },
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "banner.png"
+      ]
+    },
+    "cron": {
+      "path": "cron",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "__init__.py",
+        "jobs.py",
+        "scheduler.py"
+      ]
+    },
+    "datagen-config-examples": {
+      "path": "datagen-config-examples",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1778697218596,
+      "keyFiles": [
+        "example_browser_tasks.jsonl",
+        "run_browser_tasks.sh",
+        "trajectory_compression.yaml",
+        "web_research.yaml"
+      ]
+    },
+    "docker": {
+      "path": "docker",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "SOUL.md",
+        "entrypoint.sh"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "hermes-kanban-v1-spec.pdf"
+      ]
+    },
+    "environments": {
+      "path": "environments",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "AnyDeals_base_env.py",
+        "README.md",
+        "__init__.py",
+        "agent_loop.py",
+        "agentic_opd_env.py"
+      ]
+    },
+    "gateway": {
+      "path": "gateway",
+      "purpose": null,
+      "fileCount": 20,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "__init__.py",
+        "channel_directory.py",
+        "config.py",
+        "delivery.py",
+        "display_config.py"
+      ]
+    },
+    "locales": {
+      "path": "locales",
+      "purpose": null,
+      "fileCount": 16,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "af.yaml",
+        "de.yaml",
+        "en.yaml",
+        "es.yaml",
+        "fr.yaml"
+      ]
+    },
+    "nix": {
+      "path": "nix",
+      "purpose": null,
+      "fileCount": 11,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "AnyDeals-agent.nix",
+        "checks.nix",
+        "configMergeScript.nix",
+        "devShell.nix",
+        "lib.nix"
+      ]
+    },
+    "optional-skills": {
+      "path": "optional-skills",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778697218597,
+      "keyFiles": [
+        "DESCRIPTION.md"
+      ]
+    },
+    "packaging": {
+      "path": "packaging",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778697218597,
+      "keyFiles": []
+    },
+    "plans": {
+      "path": "plans",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "gemini-oauth-provider.md"
+      ]
+    },
+    "plugins": {
+      "path": "plugins",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "__init__.py"
+      ]
+    },
+    "providers": {
+      "path": "providers",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "README.md",
+        "__init__.py",
+        "base.py"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 20,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "AnyDeals-gateway",
+        "benchmark_browser_eval.py",
+        "build_model_catalog.py",
+        "build_skills_index.py",
+        "check-windows-footguns.py"
+      ]
+    },
+    "skills": {
+      "path": "skills",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778697218598,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 58,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "__init__.py",
+        "conftest.py",
+        "run_interrupt_test.py",
+        "test_AnyDeals_bootstrap.py",
+        "test_AnyDeals_constants.py"
+      ]
+    },
+    "tinker-atropos": {
+      "path": "tinker-atropos",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778697218598,
+      "keyFiles": []
+    },
+    "tools": {
+      "path": "tools",
+      "purpose": null,
+      "fileCount": 75,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "__init__.py",
+        "ansi_strip.py",
+        "approval.py",
+        "binary_extensions.py",
+        "browser_camofox.py"
+      ]
+    },
+    "tui_gateway": {
+      "path": "tui_gateway",
+      "purpose": null,
+      "fileCount": 8,
+      "lastAccessed": 1778697218598,
+      "keyFiles": [
+        "__init__.py",
+        "entry.py",
+        "event_publisher.py",
+        "render.py",
+        "server.py"
+      ]
+    },
+    "ui-tui": {
+      "path": "ui-tui",
+      "purpose": null,
+      "fileCount": 10,
+      "lastAccessed": 1778697218599,
+      "keyFiles": [
+        "README.md",
+        "babel.compiler.config.cjs",
+        "eslint.config.mjs",
+        "package-lock.json",
+        "package.json"
+      ]
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1778697218599,
+      "keyFiles": [
+        "README.md",
+        "eslint.config.js",
+        "index.html",
+        "package-lock.json",
+        "package.json"
+      ]
+    },
+    "website": {
+      "path": "website",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1778697218599,
+      "keyFiles": [
+        "README.md",
+        "docusaurus.config.ts",
+        "package-lock.json",
+        "package.json",
+        "sidebars.ts"
+      ]
+    },
+    "gateway/assets": {
+      "path": "gateway/assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1778697218600,
+      "keyFiles": [
+        "telegram-botfather-threads-settings.jpg"
+      ]
+    },
+    "ui-tui/scripts": {
+      "path": "ui-tui/scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 2,
+      "lastAccessed": 1778697218600,
+      "keyFiles": [
+        "build.mjs",
+        "profile-tui.mjs"
+      ]
+    },
+    "ui-tui/src": {
+      "path": "ui-tui/src",
+      "purpose": "Source code",
+      "fileCount": 7,
+      "lastAccessed": 1778697218600,
+      "keyFiles": [
+        "app.tsx",
+        "banner.ts",
+        "entry.tsx"
+      ]
+    },
+    "web/public": {
+      "path": "web/public",
+      "purpose": "Public files",
+      "fileCount": 1,
+      "lastAccessed": 1778697218600,
+      "keyFiles": [
+        "favicon.ico"
+      ]
+    },
+    "web/src": {
+      "path": "web/src",
+      "purpose": "Source code",
+      "fileCount": 3,
+      "lastAccessed": 1778697218600,
+      "keyFiles": [
+        "App.tsx",
+        "index.css",
+        "main.tsx"
+      ]
+    },
+    "website/docs": {
+      "path": "website/docs",
+      "purpose": "Documentation",
+      "fileCount": 2,
+      "lastAccessed": 1778697218600,
+      "keyFiles": [
+        "index.md",
+        "user-stories.mdx"
+      ]
+    },
+    "website/scripts": {
+      "path": "website/scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 4,
+      "lastAccessed": 1778697218601,
+      "keyFiles": [
+        "extract-skills.py",
+        "generate-llms-txt.py",
+        "generate-skill-docs.py"
+      ]
+    },
+    "website/src": {
+      "path": "website/src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1778697218601,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "nix/nixosModules.nix",
+      "accessCount": 5,
+      "lastAccessed": 1778697724317,
+      "type": "file"
+    },
+    {
+      "path": "nix/AnyDeals-agent.nix",
+      "accessCount": 3,
+      "lastAccessed": 1778697521608,
+      "type": "file"
+    },
+    {
+      "path": "tests/tools/test_transcription_tools.py",
+      "accessCount": 3,
+      "lastAccessed": 1778697860160,
+      "type": "file"
+    },
+    {
+      "path": "Dockerfile",
+      "accessCount": 2,
+      "lastAccessed": 1778697347753,
+      "type": "file"
+    },
+    {
+      "path": "nix/tui.nix",
+      "accessCount": 2,
+      "lastAccessed": 1778697621146,
+      "type": "file"
+    },
+    {
+      "path": "nix/web.nix",
+      "accessCount": 2,
+      "lastAccessed": 1778697624606,
+      "type": "file"
+    },
+    {
+      "path": "flake.nix",
+      "accessCount": 2,
+      "lastAccessed": 1778697825593,
+      "type": "file"
+    },
+    {
+      "path": "scripts/sync-upstream.sh",
+      "accessCount": 2,
+      "lastAccessed": 1778697930417,
+      "type": "file"
+    },
+    {
+      "path": "sync-upstream.sh",
+      "accessCount": 2,
+      "lastAccessed": 1778698884047,
+      "type": "file"
+    },
+    {
+      "path": "skills/productivity/google-workspace/scripts/_hermes_home.py",
+      "accessCount": 1,
+      "lastAccessed": 1778697351002,
+      "type": "file"
+    },
+    {
+      "path": "hermes",
+      "accessCount": 1,
+      "lastAccessed": 1778698914906,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
