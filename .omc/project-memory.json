@@ -38,7 +38,7 @@
   },
   "build": {
     "buildCommand": null,
-    "testCommand": "source .venv/bin/activate && python -m pytest -q tests/AnyDeals_cli/test_completion.py 2>&1",
+    "testCommand": "source ../AnyDeals-Hermes/.venv/bin/activate && python -m pytest -q tests/AnyDeals_cli/test_completion.py tests/AnyDeals_cli/test_profiles.py tests/test_AnyDeals_*.py --tb=short -c /Users/jinkui/Anydeals-Hermes/AnyDeals-Hermes/pyproject.toml 2>&1",
     "lintCommand": "ruff check",
     "devCommand": null,
     "scripts": {
@@ -494,6 +494,12 @@
       "type": "file"
     },
     {
+      "path": "web/src/App.vue",
+      "accessCount": 3,
+      "lastAccessed": 1778730929569,
+      "type": "file"
+    },
+    {
       "path": "Dockerfile",
       "accessCount": 2,
       "lastAccessed": 1778697347753,
@@ -530,6 +536,36 @@
       "type": "file"
     },
     {
+      "path": "web/src/lib/api.ts",
+      "accessCount": 2,
+      "lastAccessed": 1778730523996,
+      "type": "file"
+    },
+    {
+      "path": "web/src/router/index.ts",
+      "accessCount": 2,
+      "lastAccessed": 1778730909485,
+      "type": "file"
+    },
+    {
+      "path": "web/src/i18n/en.ts",
+      "accessCount": 2,
+      "lastAccessed": 1778730980871,
+      "type": "file"
+    },
+    {
+      "path": "web/src/i18n/types.ts",
+      "accessCount": 2,
+      "lastAccessed": 1778731001856,
+      "type": "file"
+    },
+    {
+      "path": "web/src/i18n/zh.ts",
+      "accessCount": 2,
+      "lastAccessed": 1778731032116,
+      "type": "file"
+    },
+    {
       "path": "skills/productivity/google-workspace/scripts/_hermes_home.py",
       "accessCount": 1,
       "lastAccessed": 1778697351002,
@@ -539,6 +575,36 @@
       "path": "hermes",
       "accessCount": 1,
       "lastAccessed": 1778698914906,
+      "type": "file"
+    },
+    {
+      "path": "web/vite.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778730119992,
+      "type": "file"
+    },
+    {
+      "path": "web/src/views/ModelsView.vue",
+      "accessCount": 1,
+      "lastAccessed": 1778730674678,
+      "type": "file"
+    },
+    {
+      "path": "web/src/views/PluginsView.vue",
+      "accessCount": 1,
+      "lastAccessed": 1778730779559,
+      "type": "file"
+    },
+    {
+      "path": "web/src/views/ProfilesView.vue",
+      "accessCount": 1,
+      "lastAccessed": 1778730874253,
+      "type": "file"
+    },
+    {
+      "path": "web/src/i18n/index.ts",
+      "accessCount": 1,
+      "lastAccessed": 1778730941809,
       "type": "file"
     }
   ],

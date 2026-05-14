@@ -1,21 +1,4 @@
-// The dashboard can be served either at the root of its host (e.g.
-// https://kanban.tilos.com/) or under a URL prefix when reverse-proxied
-// (e.g. https://mission-control.tilos.com/hermes/). The Python backend
-// injects ``window.__HERMES_BASE_PATH__`` into index.html based on the
-// incoming ``X-Forwarded-Prefix`` header so the SPA can address its own
-// ``/api/...`` and ``/dashboard-plugins/...`` URLs correctly without a
-// rebuild. Empty string means "served at root".
-function readBasePath(): string {
-  if (typeof window === "undefined") return "";
-  const raw = window.__HERMES_BASE_PATH__ ?? "";
-  if (!raw) return "";
-  // Normalise: ensure leading slash, strip trailing slash.
-  const withLead = raw.startsWith("/") ? raw : `/${raw}`;
-  return withLead.replace(/\/+$/, "");
-}
-
-export const HERMES_BASE_PATH = readBasePath();
-const BASE = HERMES_BASE_PATH;
+const BASE = "";
 
 import type { DashboardTheme } from "@/themes/types";
 
@@ -23,12 +6,11 @@ import type { DashboardTheme } from "@/themes/types";
 // Injected into index.html by the server — never fetched via API.
 declare global {
   interface Window {
-    __HERMES_SESSION_TOKEN__?: string;
-    __HERMES_BASE_PATH__?: string;
+    __ANYDEALS_SESSION_TOKEN__?: string;
   }
 }
 let _sessionToken: string | null = null;
-const SESSION_HEADER = "X-Hermes-Session-Token";
+const SESSION_HEADER = "X-AnyDeals-Session-Token";
 
 function setSessionHeader(headers: Headers, token: string): void {
   if (!headers.has(SESSION_HEADER)) {
@@ -38,10 +20,15 @@ function setSessionHeader(headers: Headers, token: string): void {
 
 export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   // Inject the session token into all /api/ requests.
+  // Send both the dedicated header and the Bearer auth for compatibility
+  // with all dashboard server versions.
   const headers = new Headers(init?.headers);
-  const token = window.__HERMES_SESSION_TOKEN__;
+  const token = window.__ANYDEALS_SESSION_TOKEN__;
   if (token) {
     setSessionHeader(headers, token);
+    if (!headers.has("Authorization")) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
   }
   const res = await fetch(`${BASE}${url}`, { ...init, headers });
   if (!res.ok) {
@@ -53,12 +40,12 @@ export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> 
 
 async function getSessionToken(): Promise<string> {
   if (_sessionToken) return _sessionToken;
-  const injected = window.__HERMES_SESSION_TOKEN__;
+  const injected = window.__ANYDEALS_SESSION_TOKEN__;
   if (injected) {
     _sessionToken = injected;
     return _sessionToken;
   }
-  throw new Error("Session token not available — page must be served by the Hermes dashboard server");
+  throw new Error("Session token not available — page must be served by the AnyDeals dashboard server");
 }
 
 export const api = {
@@ -67,10 +54,6 @@ export const api = {
     fetchJSON<PaginatedSessions>(`/api/sessions?limit=${limit}&offset=${offset}`),
   getSessionMessages: (id: string) =>
     fetchJSON<SessionMessagesResponse>(`/api/sessions/${encodeURIComponent(id)}/messages`),
-  getSessionLatestDescendant: (id: string) =>
-    fetchJSON<SessionLatestDescendantResponse>(
-      `/api/sessions/${encodeURIComponent(id)}/latest-descendant`,
-    ),
   deleteSession: (id: string) =>
     fetchJSON<{ ok: boolean }>(`/api/sessions/${encodeURIComponent(id)}`, {
       method: "DELETE",
@@ -85,20 +68,10 @@ export const api = {
   },
   getAnalytics: (days: number) =>
     fetchJSON<AnalyticsResponse>(`/api/analytics/usage?days=${days}`),
-  getModelsAnalytics: (days: number) =>
-    fetchJSON<ModelsAnalyticsResponse>(`/api/analytics/models?days=${days}`),
   getConfig: () => fetchJSON<Record<string, unknown>>("/api/config"),
   getDefaults: () => fetchJSON<Record<string, unknown>>("/api/config/defaults"),
   getSchema: () => fetchJSON<{ fields: Record<string, unknown>; category_order: string[] }>("/api/config/schema"),
   getModelInfo: () => fetchJSON<ModelInfoResponse>("/api/model/info"),
-  getModelOptions: () => fetchJSON<ModelOptionsResponse>("/api/model/options"),
-  getAuxiliaryModels: () => fetchJSON<AuxiliaryModelsResponse>("/api/model/auxiliary"),
-  setModelAssignment: (body: ModelAssignmentRequest) =>
-    fetchJSON<ModelAssignmentResponse>("/api/model/set", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }),
   saveConfig: (config: Record<string, unknown>) =>
     fetchJSON<{ ok: boolean }>("/api/config", {
       method: "PUT",
@@ -154,47 +127,6 @@ export const api = {
   deleteCronJob: (id: string) =>
     fetchJSON<{ ok: boolean }>(`/api/cron/jobs/${id}`, { method: "DELETE" }),
 
-  // Profiles (minimal)
-  getProfiles: () =>
-    fetchJSON<{ profiles: ProfileInfo[] }>("/api/profiles"),
-  createProfile: (body: { name: string; clone_from_default: boolean }) =>
-    fetchJSON<{ ok: boolean; name: string; path: string }>("/api/profiles", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }),
-  renameProfile: (name: string, newName: string) =>
-    fetchJSON<{ ok: boolean; name: string; path: string }>(
-      `/api/profiles/${encodeURIComponent(name)}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ new_name: newName }),
-      },
-    ),
-  deleteProfile: (name: string) =>
-    fetchJSON<{ ok: boolean }>(
-      `/api/profiles/${encodeURIComponent(name)}`,
-      { method: "DELETE" },
-    ),
-  getProfileSetupCommand: (name: string) =>
-    fetchJSON<{ command: string }>(
-      `/api/profiles/${encodeURIComponent(name)}/setup-command`,
-    ),
-  getProfileSoul: (name: string) =>
-    fetchJSON<{ content: string; exists: boolean }>(
-      `/api/profiles/${encodeURIComponent(name)}/soul`,
-    ),
-  updateProfileSoul: (name: string, content: string) =>
-    fetchJSON<{ ok: boolean }>(
-      `/api/profiles/${encodeURIComponent(name)}/soul`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      },
-    ),
-
   // Skills & Toolsets
   getSkills: () => fetchJSON<SkillInfo[]>("/api/skills"),
   toggleSkill: (name: string, enabled: boolean) =>
@@ -204,6 +136,93 @@ export const api = {
       body: JSON.stringify({ name, enabled }),
     }),
   getToolsets: () => fetchJSON<ToolsetInfo[]>("/api/tools/toolsets"),
+
+  // ── Model analytics & assignment ────────────────────────────────────
+  getModelsAnalytics: (days: number) =>
+    fetchJSON<ModelsAnalyticsResponse>(`/api/analytics/models?days=${days}`),
+  getAuxiliaryModels: () =>
+    fetchJSON<AuxiliaryModelsResponse>("/api/model/auxiliary"),
+  getModelOptions: () =>
+    fetchJSON<ModelOptionsResponse>("/api/model/options"),
+  setModelAssignment: (params: {
+    scope: "main" | "auxiliary";
+    task: string;
+    provider: string;
+    model: string;
+  }) =>
+    fetchJSON<{ ok: boolean }>("/api/model/set", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    }),
+
+  // ── Plugin hub management ──────────────────────────────────────────
+  getPluginsHub: () =>
+    fetchJSON<PluginsHubResponse>("/api/dashboard/plugins/hub"),
+  installAgentPlugin: (params: {
+    identifier: string;
+    force?: boolean;
+    enable?: boolean;
+  }) =>
+    fetchJSON<{ plugin_name?: string; warnings?: string[]; missing_env?: string[] }>(
+      "/api/dashboard/agent-plugins/install",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      },
+    ),
+  enableAgentPlugin: (name: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/dashboard/agent-plugins/${encodeURIComponent(name)}/enable`, { method: "POST" }),
+  disableAgentPlugin: (name: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/dashboard/agent-plugins/${encodeURIComponent(name)}/disable`, { method: "POST" }),
+  removeAgentPlugin: (name: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/dashboard/agent-plugins/${encodeURIComponent(name)}`, { method: "DELETE" }),
+  updateAgentPlugin: (name: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/dashboard/agent-plugins/${encodeURIComponent(name)}/update`, { method: "POST" }),
+  setPluginVisibility: (name: string, hidden: boolean) =>
+    fetchJSON<{ ok: boolean }>(`/api/dashboard/plugins/${encodeURIComponent(name)}/visibility`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ hidden }),
+    }),
+  savePluginProviders: (params: {
+    memory_provider: string;
+    context_engine: string;
+  }) =>
+    fetchJSON<{ ok: boolean }>("/api/dashboard/plugin-providers", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    }),
+
+  // ── Profile management ─────────────────────────────────────────────
+  getProfiles: () =>
+    fetchJSON<ProfilesResponse>("/api/profiles"),
+  createProfile: (params: { name: string; clone_from_default?: boolean }) =>
+    fetchJSON<{ ok: boolean }>("/api/profiles", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    }),
+  deleteProfile: (name: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/profiles/${encodeURIComponent(name)}`, { method: "DELETE" }),
+  renameProfile: (from: string, to: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/profiles/${encodeURIComponent(from)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ new_name: to }),
+    }),
+  getProfileSoul: (name: string) =>
+    fetchJSON<{ content: string }>(`/api/profiles/${encodeURIComponent(name)}/soul`),
+  updateProfileSoul: (name: string, content: string) =>
+    fetchJSON<{ ok: boolean }>(`/api/profiles/${encodeURIComponent(name)}/soul`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    }),
+  getProfileSetupCommand: (name: string) =>
+    fetchJSON<{ command: string }>(`/api/profiles/${encodeURIComponent(name)}/setup-command`),
 
   // Session search (FTS5)
   searchSessions: (q: string) =>
@@ -268,8 +287,8 @@ export const api = {
   // Gateway / update actions
   restartGateway: () =>
     fetchJSON<ActionResponse>("/api/gateway/restart", { method: "POST" }),
-  updateHermes: () =>
-    fetchJSON<ActionResponse>("/api/hermes/update", { method: "POST" }),
+  updateAnyDeals: () =>
+    fetchJSON<ActionResponse>("/api/anydeals/update", { method: "POST" }),
   getActionStatus: (name: string, lines = 200) =>
     fetchJSON<ActionStatusResponse>(
       `/api/actions/${encodeURIComponent(name)}/status?lines=${lines}`,
@@ -280,56 +299,6 @@ export const api = {
     fetchJSON<PluginManifestResponse[]>("/api/dashboard/plugins"),
   rescanPlugins: () =>
     fetchJSON<{ ok: boolean; count: number }>("/api/dashboard/plugins/rescan"),
-
-  getPluginsHub: () => fetchJSON<PluginsHubResponse>("/api/dashboard/plugins/hub"),
-
-  installAgentPlugin: (body: AgentPluginInstallRequest) =>
-    fetchJSON<AgentPluginInstallResponse>("/api/dashboard/agent-plugins/install", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body }),
-    }),
-
-  enableAgentPlugin: (name: string) =>
-    fetchJSON<{ ok: boolean; name: string; unchanged?: boolean }>(
-      `/api/dashboard/agent-plugins/${encodeURIComponent(name)}/enable`,
-      { method: "POST" },
-    ),
-
-  disableAgentPlugin: (name: string) =>
-    fetchJSON<{ ok: boolean; name: string; unchanged?: boolean }>(
-      `/api/dashboard/agent-plugins/${encodeURIComponent(name)}/disable`,
-      { method: "POST" },
-    ),
-
-  updateAgentPlugin: (name: string) =>
-    fetchJSON<AgentPluginUpdateResponse>(
-      `/api/dashboard/agent-plugins/${encodeURIComponent(name)}/update`,
-      { method: "POST" },
-    ),
-
-  removeAgentPlugin: (name: string) =>
-    fetchJSON<{ ok: boolean; name: string }>(
-      `/api/dashboard/agent-plugins/${encodeURIComponent(name)}`,
-      { method: "DELETE" },
-    ),
-
-  savePluginProviders: (body: PluginProvidersPutRequest) =>
-    fetchJSON<{ ok: boolean }>("/api/dashboard/plugin-providers", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }),
-
-  setPluginVisibility: (name: string, hidden: boolean) =>
-    fetchJSON<{ ok: boolean; name: string; hidden: boolean }>(
-      `/api/dashboard/plugins/${encodeURIComponent(name)}/visibility`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hidden }),
-      },
-    ),
 
   // Dashboard themes
   getThemes: () =>
@@ -375,7 +344,7 @@ export interface StatusResponse {
   gateway_running: boolean;
   gateway_state: string | null;
   gateway_updated_at: string | null;
-  hermes_home: string;
+  anydeals_home: string;
   latest_config_version: number;
   release_date: string;
   version: string;
@@ -395,14 +364,6 @@ export interface SessionInfo {
   input_tokens: number;
   output_tokens: number;
   preview: string | null;
-  parent_session_id?: string | null;
-}
-
-export interface SessionLatestDescendantResponse {
-  requested_session_id: string;
-  session_id: string;
-  path: string[];
-  changed: boolean;
 }
 
 export interface PaginatedSessions {
@@ -501,66 +462,15 @@ export interface AnalyticsResponse {
   };
 }
 
-export interface ProfileInfo {
-  name: string;
-  path: string;
-  is_default: boolean;
-  model: string | null;
-  provider: string | null;
-  has_env: boolean;
-  skill_count: number;
-}
-
-export interface ModelsAnalyticsModelEntry {
-  model: string;
-  provider: string;
-  input_tokens: number;
-  output_tokens: number;
-  cache_read_tokens: number;
-  reasoning_tokens: number;
-  estimated_cost: number;
-  actual_cost: number;
-  sessions: number;
-  api_calls: number;
-  tool_calls: number;
-  last_used_at: number;
-  avg_tokens_per_session: number;
-  capabilities: {
-    supports_tools?: boolean;
-    supports_vision?: boolean;
-    supports_reasoning?: boolean;
-    context_window?: number;
-    max_output_tokens?: number;
-    model_family?: string;
-  };
-}
-
-export interface ModelsAnalyticsResponse {
-  models: ModelsAnalyticsModelEntry[];
-  totals: {
-    distinct_models: number;
-    total_input: number;
-    total_output: number;
-    total_cache_read: number;
-    total_reasoning: number;
-    total_estimated_cost: number;
-    total_actual_cost: number;
-    total_sessions: number;
-    total_api_calls: number;
-  };
-  period_days: number;
-}
-
 export interface CronJob {
   id: string;
-  name?: string | null;
-  prompt?: string | null;
-  script?: string | null;
-  schedule?: { kind?: string; expr?: string; display?: string };
-  schedule_display?: string | null;
+  name?: string;
+  prompt: string;
+  schedule: { kind: string; expr: string; display: string };
+  schedule_display: string;
   enabled: boolean;
-  state?: string | null;
-  deliver?: string | null;
+  state: string;
+  deliver?: string;
   last_run_at?: string | null;
   next_run_at?: string | null;
   last_error?: string | null;
@@ -611,54 +521,6 @@ export interface ModelInfoResponse {
     max_output_tokens?: number;
     model_family?: string;
   };
-}
-
-// ── Model options / assignment types ──────────────────────────────────
-
-export interface ModelOptionProvider {
-  name: string;
-  slug: string;
-  models?: string[];
-  total_models?: number;
-  is_current?: boolean;
-  is_user_defined?: boolean;
-  source?: string;
-  warning?: string;
-}
-
-export interface ModelOptionsResponse {
-  model?: string;
-  provider?: string;
-  providers?: ModelOptionProvider[];
-}
-
-export interface AuxiliaryTaskAssignment {
-  task: string;
-  provider: string;
-  model: string;
-  base_url: string;
-}
-
-export interface AuxiliaryModelsResponse {
-  tasks: AuxiliaryTaskAssignment[];
-  main: { provider: string; model: string };
-}
-
-export interface ModelAssignmentRequest {
-  scope: "main" | "auxiliary";
-  provider: string;
-  model: string;
-  /** For auxiliary: task slot name, "" for all, "__reset__" to reset all. */
-  task?: string;
-}
-
-export interface ModelAssignmentResponse {
-  ok: boolean;
-  scope?: string;
-  provider?: string;
-  model?: string;
-  tasks?: string[];
-  reset?: boolean;
 }
 
 // ── OAuth provider types ────────────────────────────────────────────────
@@ -749,67 +611,129 @@ export interface PluginManifestResponse {
     override?: string;
     hidden?: boolean;
   };
-  slots?: string[];
   entry: string;
   css?: string | null;
   has_api: boolean;
   source: string;
 }
 
-export interface HubAgentPluginRow {
-  name: string;
-  version: string;
-  description: string;
-  source: string;
-  runtime_status: "disabled" | "enabled" | "inactive";
-  has_dashboard_manifest: boolean;
-  dashboard_manifest: PluginManifestResponse | null;
-  path: string;
-  can_remove: boolean;
-  can_update_git: boolean;
-  auth_required: boolean;
-  auth_command: string;
-  user_hidden: boolean;
+// ── Model analytics types ────────────────────────────────────────────────
+
+export interface ModelsAnalyticsModelEntry {
+  model: string;
+  provider: string;
+  input_tokens: number;
+  output_tokens: number;
+  cache_read_tokens: number;
+  reasoning_tokens: number;
+  estimated_cost: number;
+  actual_cost: number;
+  sessions: number;
+  api_calls: number;
+  capabilities: {
+    supports_tools?: boolean;
+    supports_vision?: boolean;
+    supports_reasoning?: boolean;
+    context_window?: number;
+    max_output_tokens?: number;
+    model_family?: string;
+  };
 }
 
-export interface PluginsHubProviders {
+export interface ModelsAnalyticsResponse {
+  period_days: number;
+  models: ModelsAnalyticsModelEntry[];
+  totals: {
+    distinct_models: number;
+    total_input: number;
+    total_output: number;
+    total_cache_read: number;
+    total_reasoning: number;
+    total_estimated_cost: number;
+    total_actual_cost: number;
+    total_sessions: number;
+    total_api_calls: number;
+  };
+}
+
+export interface AuxiliaryTaskAssignment {
+  task: string;
+  label?: string;
+  provider: string;
+  model: string;
+}
+
+export interface AuxiliaryModelsResponse {
+  main: { provider: string; model: string };
+  tasks: AuxiliaryTaskAssignment[];
+}
+
+export interface ModelOptionProvider {
+  name: string;
+  slug: string;
+  models: string[];
+}
+
+export interface ModelOptionsResponse {
+  providers: ModelOptionProvider[];
+  model?: string;
+  provider?: string;
+}
+
+// ── Plugin hub types ─────────────────────────────────────────────────────
+
+export interface HubAgentPluginRow {
+  name: string;
+  description?: string;
+  version?: string;
+  source: string;
+  runtime_status: string;
+  auth_required?: boolean;
+  auth_command?: string;
+  can_update_git?: boolean;
+  can_remove?: boolean;
+  has_dashboard_manifest?: boolean;
+  user_hidden?: boolean;
+  enabled?: boolean;
+  dashboard_manifest?: {
+    label?: string;
+    description?: string;
+    icon?: string;
+    tab?: {
+      path: string;
+      position?: string;
+      override?: string;
+      hidden?: boolean;
+    };
+    slots?: string[];
+  };
+}
+
+export interface PluginProviders {
   memory_provider: string;
-  memory_options: Array<{ name: string; description: string }>;
   context_engine: string;
-  context_options: Array<{ name: string; description: string }>;
+  memory_options: { name: string; description?: string }[];
+  context_options: { name: string; description?: string }[];
 }
 
 export interface PluginsHubResponse {
   plugins: HubAgentPluginRow[];
-  orphan_dashboard_plugins: PluginManifestResponse[];
-  providers: PluginsHubProviders;
+  providers: PluginProviders | null;
+  orphan_dashboard_plugins?: { name: string; label?: string; description?: string; tab?: { path: string; hidden?: boolean } }[];
 }
 
-export interface AgentPluginInstallRequest {
-  identifier: string;
-  force?: boolean;
-  enable?: boolean;
+// ── Profile management types ─────────────────────────────────────────────
+
+export interface ProfileInfo {
+  name: string;
+  is_default: boolean;
+  has_env: boolean;
+  model?: string;
+  provider?: string;
+  skill_count: number;
+  path: string;
 }
 
-export interface AgentPluginInstallResponse {
-  ok: boolean;
-  plugin_name?: string;
-  warnings?: string[];
-  missing_env?: string[];
-  after_install_path?: string | null;
-  enabled?: boolean;
-  error?: string;
-}
-
-export interface AgentPluginUpdateResponse {
-  ok: boolean;
-  name?: string;
-  output?: string;
-  unchanged?: boolean;
-  error?: string;
-}
-
-export interface PluginProvidersPutRequest {
-  memory_provider?: string;
-  context_engine?: string;
+export interface ProfilesResponse {
+  profiles: ProfileInfo[];
 }

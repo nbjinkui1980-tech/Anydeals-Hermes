@@ -1,9 +1,4 @@
 @import 'tailwindcss';
-@import '@nous-research/ui/styles/globals.css';
-
-/* Scan the published design-system bundle so its utility classes survive
-   Tailwind's JIT purge. */
-@source '../node_modules/@nous-research/ui/dist';
 
 /* ------------------------------------------------------------------ */
 /* JetBrains Mono — bundled for the embedded TUI (/chat tab).          */
@@ -36,15 +31,15 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Hermes Agent — Nous DS with the LENS_0 (Hermes teal) lens applied   */
-/* statically. Mirrors nousnet-web/(hermes-agent)/layout.tsx so the    */
-/* canonical Hermes palette is the default — teal canvas + cream      */
+/* AnyDeals Agent — Nous DS with the LENS_0 (AnyDeals teal) lens applied   */
+/* statically. Mirrors nousnet-web/(anydeals-agent)/layout.tsx so the    */
+/* canonical AnyDeals palette is the default — teal canvas + cream      */
 /* accent — without relying on leva/gsap at runtime.                  */
 /* ------------------------------------------------------------------ */
 
 :root {
   /* LENS_0 — from design-language/src/ui/components/overlays/index.tsx.
-     These are the defaults for the `default` (Hermes Teal) dashboard theme;
+     These are the defaults for the `default` (AnyDeals Teal) dashboard theme;
      ThemeProvider rewrites them as inline styles when a user switches themes. */
   --foreground: color-mix(in srgb, #ffffff 0%, transparent);
   --foreground-base: #ffffff;
@@ -117,7 +112,7 @@ code, kbd, pre, samp, .font-mono, .font-mono-ui {
   overflow: hidden;
 }
 
-/* Nousnet's hermes-agent layout bumps `small` and `code` to readable
+/* Nousnet's anydeals-agent layout bumps `small` and `code` to readable
    dashboard sizes. Keep in sync. */
 small { font-size: 1.0625rem; }
 code { font-size: 0.875rem; }
@@ -131,8 +126,10 @@ code { font-size: 0.875rem; }
   /* Remap foreground to midground so `text-foreground` / `bg-foreground`
      stay visible — in LENS_0, `--foreground` itself has alpha 0. */
   --color-foreground: var(--midground);
+  --color-background: var(--background-base);
+  --color-midground: var(--midground);
 
-  --color-card: color-mix(in srgb, var(--midground-base) 4%, var(--background-base));
+  --color-card: var(--component-card-background, color-mix(in srgb, var(--midground-base) 4%, var(--background-base)));
   --color-card-foreground: var(--midground);
   --color-primary: var(--midground);
   --color-primary-foreground: var(--background-base);
@@ -146,7 +143,7 @@ code { font-size: 0.875rem; }
   --color-destructive-foreground: #ffffff;
   --color-success: #4ade80;
   --color-warning: #ffbd38;
-  --color-border: color-mix(in srgb, var(--midground-base) 15%, transparent);
+  --color-border: var(--component-card-border-color, color-mix(in srgb, var(--midground-base) 15%, transparent));
   --color-input: color-mix(in srgb, var(--midground-base) 15%, transparent);
   --color-ring: var(--midground);
   --color-popover: color-mix(in srgb, var(--midground-base) 4%, var(--background-base));
@@ -158,6 +155,25 @@ code { font-size: 0.875rem; }
   --radius-xl: calc(var(--theme-radius) + 4px);
 }
 
+
+/* ------------------------------------------------------------------ */
+/* Glass-morphism layer.                                                */
+/* Themes opt components into glass effects by setting                  */
+/* --component-card-backdrop-filter etc. Defaults resolve to none /     */
+/* transparent — zero visual or performance cost for non-glass themes.  */
+/* ------------------------------------------------------------------ */
+
+.n-card,
+[class*="bg-card"] {
+  backdrop-filter: var(--component-card-backdrop-filter, none);
+  -webkit-backdrop-filter: var(--component-card-backdrop-filter, none);
+}
+
+/* Focus ring glow — theme can override for a colored ring. */
+.n-input--focus,
+input:focus-visible {
+  box-shadow: var(--component-page-accent-glow, 0 0 0 2px var(--color-ring));
+}
 
 /* Toast animations used by `components/Toast.tsx`. */
 @keyframes toast-in {

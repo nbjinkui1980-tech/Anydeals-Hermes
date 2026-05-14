@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard 视觉方案预览</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    padding: 2rem;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+
+  .themes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 1100px) {
+    .themes-grid { grid-template-columns: 1fr; max-width: 500px; }
+  }
+
+  .theme-panel {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #333;
+  }
+
+  .panel-label {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .panel-label .desc {
+    display: block;
+    font-weight: 400;
+    opacity: 0.6;
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
+
+  /* ---- DASHBOARD PREVIEW (scaled) ---- */
+  .db {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 480px;
+    font-size: 0.6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Top bar */
+  .db-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.55rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* Sidebar + main */
+  .db-body {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    min-height: 0;
+  }
+  .db-side {
+    width: 90px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .db-side-item {
+    padding: 0.25rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.48rem;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .db-side-item .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .db-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: hidden;
+  }
+
+  /* Stats row */
+  .db-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+  }
+  .db-stat {
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+  }
+  .db-stat-label {
+    font-size: 0.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+  }
+  .db-stat-val {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+  }
+  .db-stat-sub {
+    font-size: 0.42rem;
+    opacity: 0.5;
+    margin-top: 2px;
+  }
+
+  /* Table */
+  .db-table {
+    flex: 1;
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+  }
+  .db-table-hd {
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid;
+    margin-bottom: 2px;
+  }
+  .db-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.5rem;
+  }
+  .db-row .tag {
+    font-size: 0.42rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* Bottom bar */
+  .db-foot {
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.45rem;
+    letter-spacing: 0.06em;
+    text-align: center;
+    opacity: 0.5;
+  }
+
+  /* ---- BACKDROP LAYERS ---- */
+  .db .bg-layer  { position: absolute; inset: 0; z-index: 0; }
+  .db .glow-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .db .noise-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .db .fg         { position: relative; z-index: 3; }
+
+  /* ---- THEME A: NEXUS ---- */
+  .nexus .panel-label { background: #161b22; color: #e6edf3; border-color: #30363d; }
+  .nexus .db {
+    --bg: #0d1117; --card-bg: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e;
+    --accent: #58a6ff; --success: #3fb950; --warn: #d2991d;
+    --radius: 4px;
+    background: var(--bg);
+  }
+  .nexus .bg-layer  { background: linear-gradient(180deg, #0d1117 0%, #010409 100%); }
+  .nexus .glow-layer { background: radial-gradient(ellipse at 20% 0%, rgba(88,166,255,0.06) 0%, transparent 60%); }
+  .nexus .noise-layer { opacity: 0.03; background: repeating-conic-gradient(#fff 0% 25%, transparent 0% 50%) 0 0 / 2px 2px; }
+
+  .nexus .db-top { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); }
+  .nexus .db-side { background: var(--card-bg); border-right: 1px solid var(--border); border-radius: var(--radius); }
+  .nexus .db-side-item { color: var(--muted); }
+  .nexus .db-side-item.active { color: var(--accent); background: rgba(88,166,255,0.08); }
+  .nexus .db-side-item .dot { background: var(--muted); }
+  .nexus .db-side-item.active .dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .nexus .db-stat { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); }
+  .nexus .db-stat:nth-child(1) .db-stat-val { color: var(--accent); }
+  .nexus .db-stat:nth-child(2) .db-stat-val { color: var(--success); }
+  .nexus .db-stat:nth-child(3) .db-stat-val { color: var(--warn); }
+  .nexus .db-stat:nth-child(4) .db-stat-val { color: #f85149; }
+  .nexus .db-table { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); }
+  .nexus .db-table-hd { color: var(--muted); border-color: var(--border); }
+  .nexus .db-row { color: var(--text); }
+  .nexus .db-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+  .nexus .db-row .tag.live { background: rgba(63,185,80,0.15); color: var(--success); }
+  .nexus .db-row .tag.done { background: rgba(139,148,158,0.12); color: var(--muted); }
+  .nexus .db-foot { color: var(--muted); border: 1px solid var(--border); background: var(--card-bg); border-radius: var(--radius); }
+  .nexus .db-stats-label { position: absolute; top: 8px; right: 8px; font-size: 0.4rem; opacity: 0.35; z-index: 10; letter-spacing: 0.1em; }
+
+  /* ---- THEME B: AURORA ---- */
+  .aurora .panel-label { background: rgba(10,26,30,0.95); color: #f5f0e8; border-color: rgba(255,255,255,0.08); }
+  .aurora .db {
+    --bg: #0a1515; --card-bg: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.08);
+    --text: #f5f0e8; --muted: rgba(245,240,232,0.5);
+    --accent: #40e0d0; --accent2: #a78bfa; --success: #4ade80;
+    --radius: 12px;
+    background: var(--bg);
+  }
+  .aurora .bg-layer  { background: linear-gradient(180deg, #0a1a1a 0%, #0a0f0f 100%); }
+  .aurora .glow-layer {
+    background:
+      radial-gradient(ellipse at 15% 0%, rgba(64,224,208,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 0%, rgba(167,139,250,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(64,224,208,0.04) 0%, transparent 50%);
+  }
+  .aurora .noise-layer { opacity: 0.025;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(64,224,208,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(167,139,250,0.06) 0%, transparent 50%);
+  }
+
+  .aurora .db-top {
+    background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border); color: var(--text); border-radius: var(--radius);
+  }
+  .aurora .db-side {
+    background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .aurora .db-side-item { color: var(--muted); border-radius: 8px; transition: all 0.2s; }
+  .aurora .db-side-item.active { color: var(--accent); background: rgba(64,224,208,0.1); border: 1px solid rgba(64,224,208,0.2); }
+  .aurora .db-side-item .dot { background: var(--muted); }
+  .aurora .db-side-item.active .dot { background: var(--accent); box-shadow: 0 0 10px rgba(64,224,208,0.5); }
+  .aurora .db-stat {
+    background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    border-top: 2px solid var(--accent);
+  }
+  .aurora .db-stat:nth-child(1) { border-top-color: var(--accent); }
+  .aurora .db-stat:nth-child(2) { border-top-color: var(--accent2); }
+  .aurora .db-stat:nth-child(3) { border-top-color: var(--success); }
+  .aurora .db-stat:nth-child(4) { border-top-color: #f59e0b; }
+  .aurora .db-stat-val { color: var(--text); }
+  .aurora .db-table {
+    background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  .aurora .db-table-hd { color: var(--muted); border-color: var(--border); }
+  .aurora .db-row { color: var(--text); border-radius: 8px; }
+  .aurora .db-row:nth-child(even) { background: rgba(255,255,255,0.02); }
+  .aurora .db-row .tag.live { background: rgba(74,222,128,0.12); color: var(--success); border-radius: 6px; }
+  .aurora .db-row .tag.done { background: rgba(245,240,232,0.06); color: var(--muted); border-radius: 6px; }
+  .aurora .db-foot { color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .aurora .db-stats-label { position: absolute; top: 8px; right: 8px; font-size: 0.4rem; opacity: 0.35; z-index: 10; letter-spacing: 0.1em; }
+
+  /* ---- THEME C: FORGE ---- */
+  .forge .panel-label { background: #1c1814; color: #e8d5b7; border-color: rgba(232,213,183,0.15); }
+  .forge .db {
+    --bg: #1c1814; --card-bg: #231f1a; --border: #3a3028; --border-inner: #0d0b09;
+    --text: #e8d5b7; --muted: rgba(232,213,183,0.45);
+    --accent: #f5a623; --copper: #d4a574; --success: #7a9a5c;
+    --radius: 2px;
+    background: var(--bg);
+    font-family: Georgia, Charter, "Times New Roman", serif;
+  }
+  .forge .bg-layer  { background: linear-gradient(180deg, #1c1814 0%, #14100d 100%); }
+  .forge .glow-layer { background: radial-gradient(ellipse at 80% 100%, rgba(245,166,35,0.12) 0%, transparent 60%); }
+  .forge .noise-layer { opacity: 0.06; background: repeating-conic-gradient(#d4a574 0% 25%, transparent 0% 50%) 0 0 / 3px 3px; }
+
+  .forge .db-top {
+    background: var(--card-bg); color: var(--text);
+    border: 1.5px solid var(--border);
+    box-shadow: inset 0 1px 0 var(--border-inner);
+    border-radius: var(--radius);
+  }
+  .forge .db-side {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    box-shadow: inset 0 1px 0 var(--border-inner);
+    border-radius: var(--radius);
+  }
+  .forge .db-side-item { color: var(--muted); border-bottom: 1px solid rgba(58,48,40,0.4); text-transform: uppercase; letter-spacing: 0.08em; }
+  .forge .db-side-item.active { color: var(--accent); background: rgba(245,166,35,0.08); border-left: 2px solid var(--accent); }
+  .forge .db-side-item .dot { display: none; }
+  .forge .db-stat {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    box-shadow: inset 0 1px 0 var(--border-inner);
+    border-radius: var(--radius);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  }
+  .forge .db-stat-val { color: var(--accent); }
+  .forge .db-stat:nth-child(2) .db-stat-val { color: var(--copper); }
+  .forge .db-stat:nth-child(3) .db-stat-val { color: var(--success); }
+  .forge .db-stat:nth-child(4) .db-stat-val { color: #c04c3e; }
+  .forge .db-table {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    box-shadow: inset 0 1px 0 var(--border-inner);
+    border-radius: var(--radius);
+  }
+  .forge .db-table-hd { color: var(--accent); border-color: rgba(58,48,40,0.5); letter-spacing: 0.1em; }
+  .forge .db-row { color: var(--text); border-bottom: 1px solid rgba(58,48,40,0.3); }
+  .forge .db-row:last-child { border-bottom: none; }
+  .forge .db-row .tag.live { background: rgba(122,154,92,0.15); color: var(--success); border: 1px solid rgba(122,154,92,0.3); }
+  .forge .db-row .tag.done { background: rgba(232,213,183,0.05); color: var(--muted); border: 1px solid rgba(58,48,40,0.4); }
+  .forge .db-foot { color: var(--copper); border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--card-bg); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ---- PULSE animation (Nexus) ---- */
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .nexus .pulse { animation: pulse 2s ease-in-out infinite; }
+  .nexus .live-dot { width: 5px; height: 5px; border-radius: 50%; background: #3fb950; display: inline-block; animation: pulse 2s ease-in-out infinite; }
+
+  /* Selection row */
+  .choices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1600px;
+    margin: 2rem auto 0;
+  }
+  @media (max-width: 1100px) {
+    .choices { grid-template-columns: 1fr; max-width: 500px; }
+  }
+  .choice-card {
+    border-radius: 12px;
+    border: 1px solid #333;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: default;
+  }
+  .choice-card h3 { font-size: 1.1rem; margin-bottom: 0.25rem; letter-spacing: -0.01em; }
+  .choice-card .tagline { font-size: 0.75rem; opacity: 0.5; margin-bottom: 1rem; }
+  .choice-card ul { text-align: left; font-size: 0.72rem; line-height: 1.8; color: #999; list-style: none; padding: 0; }
+  .choice-card ul li::before { content: "→ "; opacity: 0.3; }
+</style>
+</head>
+<body>
+
+<h1>Dashboard 视觉方案预览</h1>
+<p class="subtitle">三个方案的实际渲染效果对比 — 点击放大查看细节</p>
+
+<div class="themes-grid">
+
+  <!-- ================================================================ -->
+  <!-- NEXUS (A)                                                         -->
+  <!-- ================================================================ -->
+  <div class="theme-panel nexus">
+    <div class="panel-label">方案 A — Nexus<span class="desc">精密仪表盘 · 冷灰蓝 · 高数据密度</span></div>
+    <div class="db">
+      <div class="bg-layer"></div>
+      <div class="glow-layer"></div>
+      <div class="noise-layer"></div>
+      <div class="fg" style="display:flex;flex-direction:column;gap:0.5rem;flex:1;">
+        <!-- Top bar -->
+        <div class="db-top">
+          <span>AnyDeals Agent <span class="live-dot pulse"></span> <span style="opacity:0.5;font-weight:400;">v2.4.1</span></span>
+          <span style="opacity:0.5;">Sessions · 23 active</span>
+        </div>
+
+        <div class="db-body">
+          <!-- Sidebar -->
+          <div class="db-side">
+            <div class="db-side-item active"><span class="dot"></span> Sessions</div>
+            <div class="db-side-item"><span class="dot"></span> Analytics</div>
+            <div class="db-side-item"><span class="dot"></span> Logs</div>
+            <div class="db-side-item"><span class="dot"></span> Cron</div>
+            <div class="db-side-item"><span class="dot"></span> Config</div>
+            <div class="db-side-item"><span class="dot"></span> Keys</div>
+          </div>
+
+          <!-- Main -->
+          <div class="db-main">
+            <div class="db-stats">
+              <div class="db-stat"><div class="db-stat-label">Total Tokens</div><div class="db-stat-val">1.2M</div><div class="db-stat-sub">+12% vs last week</div></div>
+              <div class="db-stat"><div class="db-stat-label">Sessions</div><div class="db-stat-val">847</div><div class="db-stat-sub">↑ 23 this hour</div></div>
+              <div class="db-stat"><div class="db-stat-label">API Calls</div><div class="db-stat-val">3.4K</div><div class="db-stat-sub">98.7% success rate</div></div>
+              <div class="db-stat"><div class="db-stat-label">Active Tools</div><div class="db-stat-val">12</div><div class="db-stat-sub">bash · read · write · edit</div></div>
+            </div>
+
+            <div class="db-table">
+              <div class="db-table-hd" style="display:flex;gap:0.5rem;"><span style="flex:1;">Session</span><span style="width:60px;">Model</span><span style="width:40px;">Msgs</span><span style="width:45px;">Status</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">debug-auth-flow — fix JWT refresh</span><span style="width:60px;opacity:0.6;">Sonnet</span><span style="width:40px;opacity:0.6;">24</span><span class="tag live" style="width:45px;text-align:center;">live</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">refactor-api-layer — split handlers</span><span style="width:60px;opacity:0.6;">Opus</span><span style="width:40px;opacity:0.6;">18</span><span class="tag done" style="width:45px;text-align:center;">done</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">add-rate-limiting — middleware</span><span style="width:60px;opacity:0.6;">Haiku</span><span style="width:40px;opacity:0.6;">6</span><span class="tag done" style="width:45px;text-align:center;">done</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">weekly-report — generate analytics</span><span style="width:60px;opacity:0.6;">Sonnet</span><span style="width:40px;opacity:0.6;">31</span><span class="tag live" style="width:45px;text-align:center;">live</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-foot">API v2 · gateway online · 4 platforms connected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- AURORA (B)                                                        -->
+  <!-- ================================================================ -->
+  <div class="theme-panel aurora">
+    <div class="panel-label">方案 B — Aurora<span class="desc">玻璃极光 · 现代SaaS · 轻盈通透</span></div>
+    <div class="db">
+      <div class="bg-layer"></div>
+      <div class="glow-layer"></div>
+      <div class="noise-layer"></div>
+      <div class="fg" style="display:flex;flex-direction:column;gap:0.5rem;flex:1;">
+        <div class="db-top">
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#40e0d0;box-shadow:0 0 8px rgba(64,224,208,0.6);"></span>
+            AnyDeals Agent
+          </span>
+          <span style="opacity:0.5;font-weight:400;text-transform:none;">23 sessions active</span>
+        </div>
+
+        <div class="db-body">
+          <div class="db-side">
+            <div class="db-side-item active"><span class="dot"></span> Sessions</div>
+            <div class="db-side-item"><span class="dot"></span> Analytics</div>
+            <div class="db-side-item"><span class="dot"></span> Logs</div>
+            <div class="db-side-item"><span class="dot"></span> Cron</div>
+            <div class="db-side-item"><span class="dot"></span> Config</div>
+            <div class="db-side-item"><span class="dot"></span> Keys</div>
+          </div>
+
+          <div class="db-main">
+            <div class="db-stats">
+              <div class="db-stat"><div class="db-stat-label">Total Tokens</div><div class="db-stat-val">1.2M</div><div class="db-stat-sub">+12% vs last week</div></div>
+              <div class="db-stat"><div class="db-stat-label">Sessions</div><div class="db-stat-val">847</div><div class="db-stat-sub">↑ 23 this hour</div></div>
+              <div class="db-stat"><div class="db-stat-label">API Calls</div><div class="db-stat-val">3.4K</div><div class="db-stat-sub">98.7% success rate</div></div>
+              <div class="db-stat"><div class="db-stat-label">Active Tools</div><div class="db-stat-val">12</div><div class="db-stat-sub">bash · read · write · edit</div></div>
+            </div>
+
+            <div class="db-table">
+              <div class="db-table-hd" style="display:flex;gap:0.5rem;"><span style="flex:1;">Session</span><span style="width:60px;">Model</span><span style="width:40px;">Msgs</span><span style="width:45px;">Status</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">debug-auth-flow — fix JWT refresh</span><span style="width:60px;opacity:0.6;">Sonnet</span><span style="width:40px;opacity:0.6;">24</span><span class="tag live" style="width:45px;text-align:center;">live</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">refactor-api-layer — split handlers</span><span style="width:60px;opacity:0.6;">Opus</span><span style="width:40px;opacity:0.6;">18</span><span class="tag done" style="width:45px;text-align:center;">done</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">add-rate-limiting — middleware</span><span style="width:60px;opacity:0.6;">Haiku</span><span style="width:40px;opacity:0.6;">6</span><span class="tag done" style="width:45px;text-align:center;">done</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">weekly-report — generate analytics</span><span style="width:60px;opacity:0.6;">Sonnet</span><span style="width:40px;opacity:0.6;">31</span><span class="tag live" style="width:45px;text-align:center;">live</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-foot">API v2 · gateway online · 4 platforms connected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- FORGE (C)                                                         -->
+  <!-- ================================================================ -->
+  <div class="theme-panel forge">
+    <div class="panel-label">方案 C — Forge<span class="desc">工业锻造 · 暖棕黑 · 粗犷质感</span></div>
+    <div class="db">
+      <div class="bg-layer"></div>
+      <div class="glow-layer"></div>
+      <div class="noise-layer"></div>
+      <div class="fg" style="display:flex;flex-direction:column;gap:0.5rem;flex:1;">
+        <div class="db-top">
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:6px;height:6px;background:#f5a623;box-shadow:0 0 4px rgba(245,166,35,0.6);"></span>
+            ANYDEALS AGENT
+          </span>
+          <span style="opacity:0.4;font-weight:400;text-transform:none;">23 SESSIONS ACTIVE</span>
+        </div>
+
+        <div class="db-body">
+          <div class="db-side">
+            <div class="db-side-item active">■ Sessions</div>
+            <div class="db-side-item">□ Analytics</div>
+            <div class="db-side-item">□ Logs</div>
+            <div class="db-side-item">□ Cron</div>
+            <div class="db-side-item">□ Config</div>
+            <div class="db-side-item">□ Keys</div>
+          </div>
+
+          <div class="db-main">
+            <div class="db-stats">
+              <div class="db-stat"><div class="db-stat-label">Total Tokens</div><div class="db-stat-val">1.2M</div><div class="db-stat-sub">+12% vs last week</div></div>
+              <div class="db-stat"><div class="db-stat-label">Sessions</div><div class="db-stat-val">847</div><div class="db-stat-sub">↑ 23 this hour</div></div>
+              <div class="db-stat"><div class="db-stat-label">API Calls</div><div class="db-stat-val">3.4K</div><div class="db-stat-sub">98.7% success rate</div></div>
+              <div class="db-stat"><div class="db-stat-label">Active Tools</div><div class="db-stat-val">12</div><div class="db-stat-sub">bash · read · write · edit</div></div>
+            </div>
+
+            <div class="db-table">
+              <div class="db-table-hd" style="display:flex;gap:0.5rem;"><span style="flex:1;">SESSION</span><span style="width:60px;">MODEL</span><span style="width:40px;">MSGS</span><span style="width:45px;">STATUS</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">debug-auth-flow — fix JWT refresh</span><span style="width:60px;opacity:0.5;">Sonnet</span><span style="width:40px;opacity:0.5;">24</span><span class="tag live" style="width:45px;text-align:center;">live</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">refactor-api-layer — split handlers</span><span style="width:60px;opacity:0.5;">Opus</span><span style="width:40px;opacity:0.5;">18</span><span class="tag done" style="width:45px;text-align:center;">done</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">add-rate-limiting — middleware</span><span style="width:60px;opacity:0.5;">Haiku</span><span style="width:40px;opacity:0.5;">6</span><span class="tag done" style="width:45px;text-align:center;">done</span></div>
+              <div class="db-row"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">weekly-report — generate analytics</span><span style="width:60px;opacity:0.5;">Sonnet</span><span style="width:40px;opacity:0.5;">31</span><span class="tag live" style="width:45px;text-align:center;">live</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-foot">API v2 · gateway online · 4 platforms connected</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

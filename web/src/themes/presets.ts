@@ -8,7 +8,7 @@ import type { DashboardTheme, ThemeTypography, ThemeLayout } from "./types";
  * corner-radius all shift to match the theme's personality.
  *
  * Theme names must stay in sync with the backend's
- * `_BUILTIN_DASHBOARD_THEMES` list in `hermes_cli/web_server.py`.
+ * `_BUILTIN_DASHBOARD_THEMES` list in `anydeals-agent_cli/web_server.py`.
  */
 
 // ---------------------------------------------------------------------------
@@ -38,10 +38,68 @@ const DEFAULT_LAYOUT: ThemeLayout = {
 // Themes
 // ---------------------------------------------------------------------------
 
+export const auroraTheme: DashboardTheme = {
+  name: "aurora",
+  label: "Aurora",
+  description: "Glass-morphism teal with aurora glows — modern SaaS aesthetic",
+  palette: {
+    background: { hex: "#0a1515", alpha: 1 },
+    midground: { hex: "#f5f0e8", alpha: 1 },
+    foreground: { hex: "#ffffff", alpha: 0 },
+    warmGlow: "rgba(64, 224, 208, 0.16)",
+    noiseOpacity: 0.45,
+  },
+  typography: {
+    fontSans: `"Inter", ${SYSTEM_SANS}`,
+    fontMono: `"JetBrains Mono", ${SYSTEM_MONO}`,
+    fontUrl:
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    baseSize: "15px",
+    lineHeight: "1.6",
+    letterSpacing: "-0.01em",
+  },
+  layout: {
+    radius: "0.75rem",
+    density: "comfortable",
+  },
+  componentStyles: {
+    card: {
+      background: "rgba(255,255,255,0.03)",
+      borderColor: "rgba(255,255,255,0.08)",
+      backdropFilter: "blur(16px)",
+      borderRadius: "var(--radius-lg)",
+    },
+    backdrop: {
+      glow: "radial-gradient(ellipse at 15% 0%, rgba(64,224,208,0.12) 0%, transparent 50%), radial-gradient(ellipse at 85% 0%, rgba(167,139,250,0.08) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(64,224,208,0.05) 0%, transparent 50%)",
+      fillerBlendMode: "soft-light",
+      fillerOpacity: "0.045",
+    },
+    sidebar: {
+      background: "rgba(255,255,255,0.02)",
+      borderColor: "rgba(255,255,255,0.06)",
+      backdropFilter: "blur(20px)",
+    },
+    header: {
+      background: "rgba(255,255,255,0.02)",
+      borderColor: "rgba(255,255,255,0.06)",
+      backdropFilter: "blur(20px)",
+    },
+    page: {
+      accentGlow: "rgba(64,224,208,0.3)",
+      accentGlowSecondary: "rgba(167,139,250,0.25)",
+    },
+  },
+  colorOverrides: {
+    success: "#4ade80",
+    warning: "#fbbf24",
+    destructive: "#f87171",
+  },
+};
+
 export const defaultTheme: DashboardTheme = {
   name: "default",
-  label: "Hermes Teal",
-  description: "Classic dark teal — the canonical Hermes look",
+  label: "AnyDeals Teal",
+  description: "Classic dark teal — the canonical AnyDeals look",
   palette: {
     background: { hex: "#041c1c", alpha: 1 },
     midground: { hex: "#ffe6cb", alpha: 1 },
@@ -65,16 +123,17 @@ export const midnightTheme: DashboardTheme = {
     noiseOpacity: 0.8,
   },
   typography: {
-    ...DEFAULT_TYPOGRAPHY,
     fontSans: `"Inter", ${SYSTEM_SANS}`,
     fontMono: `"JetBrains Mono", ${SYSTEM_MONO}`,
     fontUrl:
       "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    baseSize: "14px",
+    lineHeight: "1.6",
     letterSpacing: "-0.005em",
   },
   layout: {
-    ...DEFAULT_LAYOUT,
     radius: "0.75rem",
+    density: "comfortable",
   },
 };
 
@@ -90,15 +149,17 @@ export const emberTheme: DashboardTheme = {
     noiseOpacity: 1,
   },
   typography: {
-    ...DEFAULT_TYPOGRAPHY,
     fontSans: `"Spectral", Georgia, "Times New Roman", serif`,
     fontMono: `"IBM Plex Mono", ${SYSTEM_MONO}`,
     fontUrl:
       "https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap",
+    baseSize: "15px",
+    lineHeight: "1.6",
+    letterSpacing: "0",
   },
   layout: {
-    ...DEFAULT_LAYOUT,
     radius: "0.25rem",
+    density: "comfortable",
   },
   colorOverrides: {
     destructive: "#c92d0f",
@@ -118,15 +179,17 @@ export const monoTheme: DashboardTheme = {
     noiseOpacity: 0.6,
   },
   typography: {
-    ...DEFAULT_TYPOGRAPHY,
     fontSans: `"IBM Plex Sans", ${SYSTEM_SANS}`,
     fontMono: `"IBM Plex Mono", ${SYSTEM_MONO}`,
     fontUrl:
       "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap",
+    baseSize: "13px",
+    lineHeight: "1.5",
+    letterSpacing: "0",
   },
   layout: {
-    ...DEFAULT_LAYOUT,
     radius: "0",
+    density: "compact",
   },
 };
 
@@ -142,15 +205,17 @@ export const cyberpunkTheme: DashboardTheme = {
     noiseOpacity: 1.2,
   },
   typography: {
-    ...DEFAULT_TYPOGRAPHY,
     fontSans: `"Share Tech Mono", "JetBrains Mono", ${SYSTEM_MONO}`,
     fontMono: `"Share Tech Mono", "JetBrains Mono", ${SYSTEM_MONO}`,
     fontUrl:
       "https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;700&display=swap",
+    baseSize: "14px",
+    lineHeight: "1.5",
+    letterSpacing: "0.02em",
   },
   layout: {
-    ...DEFAULT_LAYOUT,
     radius: "0",
+    density: "compact",
   },
   colorOverrides: {
     success: "#00ff88",
@@ -171,42 +236,23 @@ export const roseTheme: DashboardTheme = {
     noiseOpacity: 0.9,
   },
   typography: {
-    ...DEFAULT_TYPOGRAPHY,
     fontSans: `"Fraunces", Georgia, serif`,
     fontMono: `"DM Mono", ${SYSTEM_MONO}`,
     fontUrl:
       "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=DM+Mono:wght@400;500&display=swap",
+    baseSize: "16px",
+    lineHeight: "1.7",
+    letterSpacing: "0",
   },
   layout: {
-    ...DEFAULT_LAYOUT,
     radius: "1rem",
-  },
-};
-
-/**
- * Same look as ``defaultTheme`` but with a larger root font size, looser
- * line-height, and ``spacious`` density so every rem-based size in the
- * dashboard scales up. For users who find the default 15px UI too dense.
- */
-export const defaultLargeTheme: DashboardTheme = {
-  name: "default-large",
-  label: "Hermes Teal (Large)",
-  description: "Hermes Teal with bigger fonts and roomier spacing",
-  palette: defaultTheme.palette,
-  typography: {
-    ...DEFAULT_TYPOGRAPHY,
-    baseSize: "18px",
-    lineHeight: "1.65",
-  },
-  layout: {
-    ...DEFAULT_LAYOUT,
     density: "spacious",
   },
 };
 
 export const BUILTIN_THEMES: Record<string, DashboardTheme> = {
+  aurora: auroraTheme,
   default: defaultTheme,
-  "default-large": defaultLargeTheme,
   midnight: midnightTheme,
   ember: emberTheme,
   mono: monoTheme,

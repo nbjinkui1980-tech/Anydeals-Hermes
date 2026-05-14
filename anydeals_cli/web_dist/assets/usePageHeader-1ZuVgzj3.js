@@ -1,0 +1,1 @@
+import{D as e}from"./vue.runtime.esm-bundler-DKFZ-WMf.js";var t=Symbol(`pageHeaderTitle`),n=Symbol(`pageHeaderAfterTitle`),r=Symbol(`pageHeaderEnd`);function i(){let i=e(t),a=e(n),o=e(r);return{setTitle:e=>{i&&(i.value=e)},setAfterTitle:e=>{a&&(a.value=e)},setEnd:e=>{o&&(o.value=e)}}}export{i as t};

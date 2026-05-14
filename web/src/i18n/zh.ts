@@ -1,6 +1,7 @@
 import type { Translations } from "./types";
 
 export const zh: Translations = {
+  // i18n:
   common: {
     save: "保存",
     saving: "保存中...",
@@ -46,10 +47,15 @@ export const zh: Translations = {
     pluginLoadFailed:
       "无法加载此插件的脚本。请检查网络请求（dashboard-plugins/…）以及服务器上的插件路径。",
     pluginNotRegistered: "插件脚本未调用 register()，或执行出错。请打开浏览器控制台查看详情。",
+    copied: "已复制",
+    copyLastResponse: "复制最后回复",
+    noneOption: "（无）",
+    commaSeparatedPlaceholder: "逗号分隔的值",
   },
 
+  // i18n:
   app: {
-    brand: "Hermes Agent",
+    brand: "AnyDeals Agent",
     brandShort: "HA",
     closeNavigation: "关闭导航",
     closeModelTools: "关闭模型与工具",
@@ -73,9 +79,6 @@ export const zh: Translations = {
       documentation: "文档",
       keys: "密钥",
       logs: "日志",
-      models: "模型",
-      profiles: "多Agent配置",
-      plugins: "插件管理",
       sessions: "会话",
       skills: "技能",
     },
@@ -84,13 +87,13 @@ export const zh: Translations = {
     navigation: "导航",
     openDocumentation: "在新标签页中打开文档",
     openNavigation: "打开导航",
-    pluginNavSection: "插件",
     sessionsActiveCount: "{count} 个活跃",
     statusOverview: "状态概览",
     system: "系统",
     webUi: "管理面板",
   },
 
+  // i18n:
   status: {
     actionFailed: "操作失败",
     actionFinished: "已完成",
@@ -119,11 +122,12 @@ export const zh: Translations = {
     starting: "启动中",
     startedInBackground: "已在后台启动 — 请查看日志",
     stopped: "已停止",
-    updateHermes: "更新 Hermes",
-    updatingHermes: "正在更新 Hermes…",
+    updateAnyDeals: "更新 AnyDeals",
+    updatingAnyDeals: "正在更新 AnyDeals…",
     waitingForOutput: "等待输出…",
   },
 
+  // i18n:
   sessions: {
     title: "会话",
     searchPlaceholder: "搜索消息内容...",
@@ -148,6 +152,7 @@ export const zh: Translations = {
     },
   },
 
+  // i18n:
   analytics: {
     period: "时间范围：",
     totalTokens: "总 Token 数",
@@ -174,18 +179,7 @@ export const zh: Translations = {
     inOut: "输入 {input} / 输出 {output}",
   },
 
-  models: {
-    modelsUsed: "使用模型数",
-    estimatedCost: "预估费用",
-    tokens: "Token",
-    sessions: "会话",
-    avgPerSession: "平均/会话",
-    apiCalls: "API 调用",
-    toolCalls: "工具调用",
-    noModelsData: "该时间段暂无模型使用数据",
-    startSession: "开始会话后将在此显示模型数据",
-  },
-
+  // i18n:
   logs: {
     title: "日志",
     autoRefresh: "自动刷新",
@@ -196,6 +190,7 @@ export const zh: Translations = {
     noLogLines: "未找到日志记录",
   },
 
+  // i18n:
   cron: {
     confirmDeleteMessage: "将从此计划移除该任务，此操作无法撤销。",
     confirmDeleteTitle: "删除定时任务？",
@@ -223,78 +218,7 @@ export const zh: Translations = {
     },
   },
 
-  profiles: {
-    newProfile: "新建多Agent配置",
-    name: "名称",
-    namePlaceholder: "例如：coder, writer 等",
-    nameRequired: "名称必填",
-    nameRule:
-      "仅允许小写字母、数字、下划线和短横线；首字符必须是字母或数字；最多 64 个字符。",
-    invalidName: "多Agent配置名称非法",
-    cloneFromDefault: "从默认多Agent配置克隆配置",
-    allProfiles: "多Agent配置列表",
-    noProfiles: "暂无多Agent配置。",
-    defaultBadge: "默认",
-    hasEnv: "已配置 env",
-    model: "模型",
-    skills: "技能",
-    rename: "重命名",
-    editSoul: "编辑 SOUL.md",
-    soulSection: "SOUL.md（人格 / 系统提示词）",
-    soulPlaceholder: "# 这个代理应当如何工作……",
-    saveSoul: "保存 SOUL",
-    soulSaved: "SOUL.md 已保存",
-    openInTerminal: "复制 CLI 命令",
-    commandCopied: "已复制到剪贴板",
-    copyFailed: "复制失败",
-    confirmDeleteTitle: "删除多Agent配置？",
-    confirmDeleteMessage:
-      "将永久删除多Agent配置 '{name}' — 包括配置、密钥、记忆、会话、技能、定时任务。此操作无法撤销。",
-    created: "已创建",
-    deleted: "已删除",
-    renamed: "已重命名",
-  },
-
-  pluginsPage: {
-    contextEngineLabel: "上下文引擎",
-    dashboardSlots: "面板插槽",
-    disableRuntime: "禁用",
-    enableAfterInstall: "安装后启用",
-    enableRuntime: "启用",
-    forceReinstall: "强制重装（先删除已有目录）",
-    headline: "发现、安装、启用和更新 Hermes 插件（对齐 `hermes plugins` CLI）。",
-    identifierLabel: "Git 地址或 owner/repo",
-    inactive: "未启用",
-    installBtn: "从 Git 安装",
-    installHeading: "从 GitHub / Git 地址安装",
-    installHint: "使用 owner/repo 简写或完整的 https:// / git@ 克隆地址。",
-    memoryProviderLabel: "记忆提供方",
-    missingEnvWarn: "在「密钥」页面设置以下变量后再运行插件：",
-    noDashboardTab: "无仪表盘标签",
-    openTab: "打开",
-    orphanHeading: "仅仪表盘扩展（无匹配的 agent plugin.yaml）",
-    pluginListHeading: "已安装插件",
-    providerDefaults: "内置 / 默认",
-    providersHeading: "运行时提供方插件",
-    providersHint:
-      "写入 config.yaml：memory.provider（留空为内置）、context.engine。下次会话生效。",
-    refreshDashboard: "重新扫描仪表盘扩展",
-    removeConfirm: "从 ~/.hermes/plugins/ 删除此插件？",
-    removeHint: "仅可移除用户安装在 ~/.hermes/plugins 下的插件。",
-    rescanHeading: "SPA 插件注册表",
-    rescanHint: "在磁盘新增文件后扫描，使侧边栏载入新 manifest。",
-    runtimeHeading: "网关运行时（YAML 插件）",
-    saveProviders: "保存提供方设置",
-    savedProviders: "提供方设置已保存。",
-    sourceBadge: "来源",
-    authRequired: "需要认证",
-    authRequiredHint: "运行此命令以完成认证：",
-    updateGit: "git pull",
-    versionBadge: "版本",
-    showInSidebar: "在侧边栏显示",
-    hideFromSidebar: "从侧边栏隐藏",
-  },
-
+  // i18n:
   skills: {
     title: "技能",
     searchPlaceholder: "搜索技能和工具集...",
@@ -302,7 +226,7 @@ export const zh: Translations = {
     all: "全部",
     categories: "分类",
     filters: "筛选",
-    noSkills: "未找到技能。技能从 ~/.hermes/skills/ 加载",
+    noSkills: "未找到技能。技能从 ~/.anydeals/skills/ 加载",
     noSkillsMatch: "没有匹配的技能。",
     skillCount: "{count} 个技能",
     resultCount: "{count} 个结果",
@@ -315,8 +239,9 @@ export const zh: Translations = {
     more: "还有 {count} 个",
   },
 
+  // i18n:
   config: {
-    configPath: "~/.hermes/config.yaml",
+    configPath: "~/.anydeals/config.yaml",
     filters: "筛选",
     sections: "分类",
     exportConfig: "导出配置为 JSON",
@@ -355,6 +280,7 @@ export const zh: Translations = {
     },
   },
 
+  // i18n:
   env: {
     changesNote: "更改会立即保存到磁盘。活跃会话将自动获取新密钥。",
     confirmClearMessage: "该变量的已存值将从 .env 文件中删除。无法在此界面撤销。",
@@ -374,6 +300,7 @@ export const zh: Translations = {
     hideValue: "隐藏值",
   },
 
+  // i18n:
   oauth: {
     title: "提供商登录（OAuth）",
     providerLogins: "提供商登录（OAuth）",
@@ -413,280 +340,89 @@ export const zh: Translations = {
     expiresIn: "{time}后过期",
   },
 
+  // i18n:
+  chat: {
+    sessionTokenUnavailable:
+      "会话令牌不可用。请通过 `anydeals-agent dashboard` 命令打开此页面，而不是直接访问。",
+    copyLastAssistant: "复制最后一条助手回复（原始 Markdown）",
+  },
+
+  // i18n:
   language: {
     switchTo: "切换到英文",
   },
 
+  // i18n:
   theme: {
     title: "主题",
     switchTheme: "切换主题",
   },
 
-  achievements: {
-    hero: {
-      kicker: "Agentic Gamerscore",
-      title: "Hermes Achievements",
-      subtitle:
-        "从真实会话历史中获得的 Hermes 可收集徽章。已知尚未达成的成就显示为「已发现」；秘密成就在首次出现匹配行为之前保持隐藏。",
-      scan_subtitle:
-        "正在扫描 Hermes 会话历史。在历史记录较多时，首次扫描可能需要 5–10 秒。",
-    },
-    actions: {
-      rescan: "重新扫描",
-    },
-    stats: {
-      unlocked: "已解锁",
-      unlocked_hint: "获得的徽章",
-      discovered: "已发现",
-      discovered_hint: "已知，但尚未获得",
-      secrets: "秘密",
-      secrets_hint: "在首次信号出现前保持隐藏",
-      highest_tier: "最高等级",
-      highest_tier_hint: "Copper → Silver → Gold → Diamond → Olympian",
-      latest: "最新",
-      latest_hint_empty: "多多运行 Hermes",
-      none_yet: "暂无",
-    },
-    state: {
-      unlocked: "已解锁",
-      discovered: "已发现",
-      secret: "秘密",
-    },
-    tier: {
-      target: "目标 {tier}",
-      hidden: "隐藏",
-      complete: "已完成",
-      objective: "目标",
-    },
-    progress: {
-      hidden: "隐藏",
-    },
-    scan: {
-      building_headline: "正在构建成就档案…",
-      building_detail:
-        "正在读取会话、工具调用、模型元数据和解锁状态。",
-      starting_headline: "正在开始成就扫描…",
-      progress_detail:
-        "已扫描 {scanned} / {total} 个会话 · {pct}%。随着更多历史流入，徽章会陆续解锁。",
-      idle_detail:
-        "正在读取会话、工具调用、模型元数据和解锁状态。徽章解锁后将在此显示。",
-    },
-    guide: {
-      tiers_header: "等级",
-      secret_header: "秘密成就",
-      secret_body:
-        "秘密成就会隐藏其确切触发条件。一旦 Hermes 检测到相关信号，卡片将变为「已发现」并显示其要求。",
-      scan_status_header: "扫描状态",
-      scan_status_body:
-        "Hermes 正在对本地历史进行一次扫描，之后卡片会自动出现。即使这需要几秒钟，也没有卡住。",
-      what_scanned_header: "扫描内容",
-      what_scanned_body:
-        "会话、工具调用、模型元数据、错误、成就和本地解锁状态。",
-    },
-    card: {
-      share_title: "分享此成就",
-      share_label: "分享 {name}",
-      share_text: "分享",
-      how_to_reveal: "如何揭示",
-      what_counts: "计入条件",
-      evidence_label: "证据",
-      evidence_session_fallback: "会话",
-      no_evidence: "暂无证据",
-    },
-    latest: {
-      header: "最近解锁",
-    },
-    empty: {
-      no_secrets_header: "本次扫描中已没有隐藏的秘密。",
-      no_secrets_body:
-        "提示：秘密通常源于异常失败或高级用户行为模式 —— 端口冲突、权限阻拦、缺少环境变量、YAML 错误、Docker 冲突、回滚或检查点使用、缓存命中，或在大量红色错误后做出的小小修复。",
-    },
-    filters: {
-      all_categories: "全部",
-      visibility_all: "全部",
-      visibility_unlocked: "已解锁",
-      visibility_discovered: "已发现",
-      visibility_secret: "秘密",
-    },
-    share: {
-      dialog_label: "分享成就",
-      header: "分享：{name}",
-      close: "关闭",
-      rendering: "渲染中…",
-      card_alt: "{name} 分享卡片",
-      error_generic: "发生错误。",
-      x_title: "在 X 中打开预填好的帖子",
-      x_button: "在 X 上分享",
-      copy_title: "复制图片以粘贴到你的帖子中",
-      copy_button: "复制图片",
-      copied: "已复制 ✓",
-      download_button: "下载 PNG",
-      hint:
-        "「在 X 上分享」会在新标签页中打开预填好的帖子。如果想附上 1200×630 的徽章，请先点击「复制图片」—— X 允许你直接粘贴到推文编辑器中。「下载 PNG」会将文件保存下来，可在任意位置使用。",
-      clipboard_unsupported:
-        "此浏览器不支持复制剪贴板图片 —— 请改用「下载」。",
-      tweet_text: "Just unlocked {tier_part}\"{name}\" in Hermes Agent ☤",
-    },
+  // ── 模型页 ──
+  models: {
+    noModelsData: "该时段暂无模型使用数据",
+    startSession: "启动会话以查看模型数据",
+    modelsUsed: "已使用模型",
+    estimatedCost: "预估费用",
   },
 
-  kanban: {
-    loading: "正在加载看板…",
-    loadFailed: "加载看板失败：",
-    loadFailedHint:
-      "后端会在首次读取时自动创建 kanban.db。如果问题持续，请检查仪表盘日志。",
-    board: "看板",
-    newBoard: "+ 新建看板",
-    newBoardTitle: "新建看板",
-    newBoardDescription:
-      "看板可以将不相关的工作流分开——每个项目、代码库或域一个看板。一个看板上的工作者不会看到另一个看板的任务。",
-    slug: "标识",
-    slugHint: "— 小写字母、连字符，例如 atm10-server",
-    displayName: "显示名称",
-    displayNameHint: "（可选）",
-    description: "描述",
-    descriptionHint: "（可选）",
-    icon: "图标",
-    iconHint: "（单个字符或表情）",
-    switchAfterCreate: "创建后切换到此看板",
-    cancel: "取消",
-    creating: "创建中…",
-    createBoard: "创建看板",
-    search: "搜索",
-    filterCards: "筛选卡片…",
-    tenant: "租户",
-    allTenants: "全部租户",
-    assignee: "负责人",
-    allProfiles: "全部配置",
-    showArchived: "显示已归档",
-    lanesByProfile: "按配置分组",
-    nudgeDispatcher: "触发调度器",
-    refresh: "刷新",
-    selected: "已选中",
-    complete: "完成",
-    archive: "归档",
-    apply: "应用",
-    clear: "清除",
-    createTask: "在此列创建任务",
-    noTasks: "— 无任务 —",
-    unassigned: "未分配",
-    untitled: "（无标题）",
-    loadingDetail: "加载中…",
-    addComment: "添加评论…（按回车提交）",
-    comment: "评论",
-    status: "状态",
-    workspace: "工作区",
+  // ── 插件页 ──
+  plugins: {
+    refreshDashboard: "刷新仪表板",
+    installHeading: "安装插件",
+    installHint: "输入插件标识符（owner/repo 或 URL）进行安装。",
+    identifierLabel: "标识符",
+    forceReinstall: "强制重新安装",
+    enableAfterInstall: "安装后启用",
+    installBtn: "安装",
+    rescanHint: "重新扫描会检测磁盘上的新插件。",
+    removeHint: "删除会从代理中永久移除插件。",
+    pluginListHeading: "已安装插件",
+    saveProviders: "保存提供者",
+    savedProviders: "提供者已保存",
+    sourceBadge: "来源",
+    authRequired: "需要认证",
+    authRequiredHint: "运行此命令进行认证：",
+    enableRuntime: "启用",
+    disableRuntime: "禁用",
+    openTab: "打开标签",
+    updateGit: "更新（git）",
+    showInSidebar: "在侧栏显示",
+    hideFromSidebar: "从侧栏隐藏",
+    removeConfirm: "移除插件？",
+    dashboardSlots: "仪表板插槽",
+    noDashboardTab: "该插件未提供仪表板标签页。",
+    orphanHeading: "孤立仪表板插件",
+  },
+
+  // ── 配置页 ──
+  profiles: {
+    allProfiles: "所有配置",
+    newProfile: "新建配置",
+    name: "名称",
+    namePlaceholder: "my-profile",
+    nameRequired: "请输入配置名称",
+    nameRule: "只能使用小写字母、数字、连字符和下划线（最多64字符）",
+    invalidName: "无效名称",
+    cloneFromDefault: "从默认配置克隆",
+    created: "配置已创建",
+    renamed: "配置已重命名",
+    deleted: "配置已删除",
+    confirmDeleteTitle: "删除配置？",
+    confirmDeleteMessage: "这将永久删除「{name}」配置及其所有数据。此操作无法撤销。",
+    defaultBadge: "默认",
+    hasEnv: "有 .env",
+    model: "模型",
     skills: "技能",
-    createdBy: "创建者",
-    result: "结果",
-    comments: "评论",
-    events: "事件",
-    runHistory: "运行历史",
-    workerLog: "工作日志",
-    loadingLog: "正在加载日志…",
-    noWorkerLog:
-      "— 暂无工作日志（任务尚未启动或日志已被轮转）—",
-    noDescription: "— 无描述 —",
-    noComments: "— 无评论 —",
-    edit: "编辑",
-    save: "保存",
-    dependencies: "依赖",
-    parents: "父任务：",
-    children: "子任务：",
-    none: "无",
-    addParent: "— 添加父任务 —",
-    addChild: "— 添加子任务 —",
-    removeDependency: "移除依赖",
-    block: "阻塞",
-    unblock: "解除阻塞",
-    notifyHomeChannels: "通知主页频道",
-    diagnostics: "诊断",
-    hide: "隐藏",
-    show: "显示",
-    attention: "注意",
-    tasksNeedAttention: "个任务需要关注",
-    taskNeedsAttention: "1 个任务需要关注",
-    diagnostic: "诊断",
-    open: "打开",
-    close: "关闭 (Esc)",
-    reassignTo: "重新分配给：",
-    copied: "已复制",
-    copyCommand: "复制命令到剪贴板",
-    reclaim: "收回",
-    reassign: "重新分配",
-    renderingError: "看板标签页发生渲染错误",
-    reloadView: "重新加载视图",
-    wsAuthFailed:
-      "WebSocket 认证失败 — 请刷新页面以更新会话令牌。",
-    markDone: "将 {n} 个任务标记为完成？",
-    markArchived: "归档 {n} 个任务？",
-    warning: "警告",
-    phantomIds: "幽灵 ID：",
-    active: "运行中",
-    ended: "已结束",
-    noProfile: "（无配置）",
-    showAllAttempts: "显示所有尝试",
-    sendingUpdates: "正在发送更新到",
-    sendNotifications: "发送完成 / 阻塞 / 放弃通知到",
-    archiveBoardConfirm:
-      "归档看板 '{name}'？它将被移动到 boards/_archived/ 以便稍后恢复。此看板上的任务将不再出现在 UI 中的任何地方。",
-    archiveBoardTitle: "归档此看板",
-    boardSwitcherHint: "看板可以将不相关的工作流分开",
-    taskCreatedWarning: "任务已创建，但：",
-    moveFailed: "移动失败：",
-    bulkFailed: "批量操作：",
-    completionBlockedHallucination: "⚠ 完成被阻塞 — 幽灵卡片 ID",
-    suspectedHallucinatedReferences: "⚠ 文本引用了幽灵卡片 ID",
-    pickProfileFirst: "请先选择一个配置。",
-    unblockedMessage: "已解除阻塞 {id}。任务已准备好进入下一轮调度。",
-    unblockFailed: "解除阻塞失败：",
-    reclaimedMessage: "已收回 {id}。任务已回到就绪状态。",
-    reclaimFailed: "收回失败：",
-    reassignedMessage: "已将 {id} 重新分配给 {profile}。",
-    reassignFailed: "重新分配失败：",
-    selectForBulk: "选择以进行批量操作",
-    clickToEdit: "点击编辑",
-    clickToEditAssignee: "点击编辑负责人",
-    emptyAssignee: "（留空 = 取消分配）",
-    columnLabels: {
-      triage: "待分类",
-      todo: "待办",
-      ready: "就绪",
-      running: "进行中",
-      blocked: "阻塞",
-      done: "已完成",
-      archived: "已归档",
-    },
-    columnHelp: {
-      triage: "原始想法 — 规范制定者将完善规格",
-      todo: "等待依赖项或未分配",
-      ready: "已分配，等待调度器轮询",
-      running: "已被工作者认领 — 执行中",
-      blocked: "工作者请求人工输入",
-      done: "已完成",
-      archived: "已归档",
-    },
-    confirmDone:
-      "将此任务标记为完成？工作者将被释放，依赖的子任务将变为就绪。",
-    confirmArchive:
-      "归档此任务？它将从默认看板视图中消失。",
-    confirmBlocked:
-      "将此任务标记为阻塞？工作者将被释放。",
-    completionSummary:
-      "{label} 的完成摘要。这将作为任务结果存储。",
-    completionSummaryRequired:
-      "在将任务标记为完成之前，必须提供完成摘要。",
-    triagePlaceholder: "粗略想法 — AI 将完善规格…",
-    taskTitlePlaceholder: "新任务标题…",
-    specifier: "规范制定者",
-    assigneePlaceholder: "负责人",
-    priority: "优先级",
-    skillsPlaceholder:
-      "技能（可选，逗号分隔）：翻译、github-code-review",
-    noParent: "— 无父任务 —",
-    workspacePathDir: "工作区路径（必填，例如 ~/projects/my-app）",
-    workspacePathOptional:
-      "工作区路径（可选，留空则根据负责人推导）",
-    logTruncated: "（显示最后 100 KB — 完整日志位于 ",
-    logAt: "）",
+    noProfiles: "未找到配置。创建一个以开始使用。",
+    editSoul: "编辑 SOUL",
+    openInTerminal: "在终端中打开",
+    rename: "重命名",
+    soulSection: "SOUL 部分",
+    soulPlaceholder: "输入 SOUL 部分内容...",
+    saveSoul: "保存 SOUL",
+    soulSaved: "SOUL 已保存",
+    commandCopied: "命令已复制",
+    copyFailed: "无法复制命令",
   },
 };
