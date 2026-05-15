@@ -1,3 +1,8 @@
+AnyDeals_bootstrap.py
+AnyDeals_constants.py
+AnyDeals_logging.py
+AnyDeals_state.py
+AnyDeals_time.py
 LICENSE
 MANIFEST.in
 README.md
@@ -345,7 +350,11 @@ optional-skills/mcp/fastmcp/templates/file_processor.py
 optional-skills/mcp/mcporter/SKILL.md
 optional-skills/migration/DESCRIPTION.md
 optional-skills/migration/openclaw-migration/SKILL.md
-optional-skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py
+optional-skills/migration/openclaw-migration/scripts/openclaw_to_anydeals.py
+optional-skills/mlops/AnyDeals-atropos-environments/SKILL.md
+optional-skills/mlops/AnyDeals-atropos-environments/references/agentresult-fields.md
+optional-skills/mlops/AnyDeals-atropos-environments/references/atropos-base-env.md
+optional-skills/mlops/AnyDeals-atropos-environments/references/usage-patterns.md
 optional-skills/mlops/accelerate/SKILL.md
 optional-skills/mlops/accelerate/references/custom-plugins.md
 optional-skills/mlops/accelerate/references/megatron-integration.md
@@ -363,10 +372,6 @@ optional-skills/mlops/guidance/SKILL.md
 optional-skills/mlops/guidance/references/backends.md
 optional-skills/mlops/guidance/references/constraints.md
 optional-skills/mlops/guidance/references/examples.md
-optional-skills/mlops/hermes-atropos-environments/SKILL.md
-optional-skills/mlops/hermes-atropos-environments/references/agentresult-fields.md
-optional-skills/mlops/hermes-atropos-environments/references/atropos-base-env.md
-optional-skills/mlops/hermes-atropos-environments/references/usage-patterns.md
 optional-skills/mlops/huggingface-tokenizers/SKILL.md
 optional-skills/mlops/huggingface-tokenizers/references/algorithms.md
 optional-skills/mlops/huggingface-tokenizers/references/integration.md
@@ -494,6 +499,8 @@ optional-skills/software-development/rest-graphql-debug/SKILL.md
 optional-skills/web-development/DESCRIPTION.md
 optional-skills/web-development/page-agent/SKILL.md
 plugins/__init__.py
+plugins/AnyDeals-achievements/dashboard/plugin_api.py
+plugins/AnyDeals-achievements/tests/test_achievement_engine.py
 plugins/context_engine/__init__.py
 plugins/disk-cleanup/__init__.py
 plugins/disk-cleanup/disk_cleanup.py
@@ -512,8 +519,6 @@ plugins/google_meet/node/registry.py
 plugins/google_meet/node/server.py
 plugins/google_meet/realtime/__init__.py
 plugins/google_meet/realtime/openai_client.py
-plugins/hermes-achievements/dashboard/plugin_api.py
-plugins/hermes-achievements/tests/test_achievement_engine.py
 plugins/image_gen/openai/__init__.py
 plugins/image_gen/openai-codex/__init__.py
 plugins/image_gen/xai/__init__.py
@@ -591,9 +596,9 @@ skills/apple/findmy/SKILL.md
 skills/apple/imessage/SKILL.md
 skills/apple/macos-computer-use/SKILL.md
 skills/autonomous-ai-agents/DESCRIPTION.md
+skills/autonomous-ai-agents/AnyDeals-agent/SKILL.md
 skills/autonomous-ai-agents/claude-code/SKILL.md
 skills/autonomous-ai-agents/codex/SKILL.md
-skills/autonomous-ai-agents/hermes-agent/SKILL.md
 skills/autonomous-ai-agents/opencode/SKILL.md
 skills/creative/DESCRIPTION.md
 skills/creative/architecture-diagram/SKILL.md
@@ -960,7 +965,7 @@ skills/productivity/DESCRIPTION.md
 skills/productivity/airtable/SKILL.md
 skills/productivity/google-workspace/SKILL.md
 skills/productivity/google-workspace/references/gmail-search-syntax.md
-skills/productivity/google-workspace/scripts/_hermes_home.py
+skills/productivity/google-workspace/scripts/_AnyDeals_home.py
 skills/productivity/google-workspace/scripts/google_api.py
 skills/productivity/google-workspace/scripts/gws_bridge.py
 skills/productivity/google-workspace/scripts/setup.py
@@ -1102,8 +1107,8 @@ skills/smart-home/DESCRIPTION.md
 skills/smart-home/openhue/SKILL.md
 skills/social-media/DESCRIPTION.md
 skills/social-media/xurl/SKILL.md
-skills/software-development/debugging-hermes-tui-commands/SKILL.md
-skills/software-development/hermes-agent-skill-authoring/SKILL.md
+skills/software-development/AnyDeals-agent-skill-authoring/SKILL.md
+skills/software-development/debugging-AnyDeals-tui-commands/SKILL.md
 skills/software-development/node-inspect-debugger/SKILL.md
 skills/software-development/plan/SKILL.md
 skills/software-development/python-debugpy/SKILL.md
@@ -1116,6 +1121,12 @@ skills/software-development/systematic-debugging/SKILL.md
 skills/software-development/test-driven-development/SKILL.md
 skills/software-development/writing-plans/SKILL.md
 skills/yuanbao/SKILL.md
+tests/test_AnyDeals_bootstrap.py
+tests/test_AnyDeals_constants.py
+tests/test_AnyDeals_home_profile_warning.py
+tests/test_AnyDeals_logging.py
+tests/test_AnyDeals_state.py
+tests/test_AnyDeals_state_wal_fallback.py
 tests/test_account_usage.py
 tests/test_atomic_replace_symlinks.py
 tests/test_base_url_hostname.py
@@ -1127,12 +1138,6 @@ tests/test_ctx_halving_fix.py
 tests/test_empty_model_fallback.py
 tests/test_evidence_store.py
 tests/test_get_tool_definitions_cache_isolation.py
-tests/test_hermes_bootstrap.py
-tests/test_hermes_constants.py
-tests/test_hermes_home_profile_warning.py
-tests/test_hermes_logging.py
-tests/test_hermes_state.py
-tests/test_hermes_state_wal_fallback.py
 tests/test_honcho_client_config.py
 tests/test_install_sh_pythonpath_sanitization.py
 tests/test_install_sh_setup_wizard_tty_probe.py

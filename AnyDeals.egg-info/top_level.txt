@@ -1,5 +1,4 @@
 AnyDeals_bootstrap
-AnyDeals_cli
 AnyDeals_constants
 AnyDeals_logging
 AnyDeals_state

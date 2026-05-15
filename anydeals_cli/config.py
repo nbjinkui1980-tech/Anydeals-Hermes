@@ -1221,6 +1221,8 @@ DEFAULT_CONFIG = {
         "free_response_channels": "",  # Comma-separated channel IDs where bot responds without mention
         "allowed_channels": "",        # If set, bot ONLY responds in these channel IDs (whitelist)
         "channel_prompts": {},         # Per-channel ephemeral system prompts
+        "home_channel": "",            # Default channel ID for cron delivery
+        "home_channel_name": "",       # Display name for the home channel
     },
 
     # Discord platform settings (gateway mode)
@@ -1245,6 +1247,8 @@ DEFAULT_CONFIG = {
         # list_roles, member_info, search_members, fetch_messages, list_pins,
         # pin_message, unpin_message, create_thread, add_role, remove_role.
         "server_actions": "",
+        "home_channel": "",            # Default channel ID for cron delivery
+        "home_channel_name": "",       # Display name for the home channel
     },
 
     # WhatsApp platform settings (gateway mode)
@@ -1253,6 +1257,8 @@ DEFAULT_CONFIG = {
         # Default (None) uses the built-in "⚕ *Anydeals Agent*" header.
         # Set to "" (empty string) to disable the header entirely.
         # Supports \n for newlines, e.g. "🤖 *My Bot*\n──────\n"
+        "home_channel": "",            # Default chat for cron delivery
+        "home_channel_name": "",       # Display name for the home channel
     },
 
     # Telegram platform settings (gateway mode)
@@ -1260,6 +1266,8 @@ DEFAULT_CONFIG = {
         "reactions": False,            # Add 👀/✅/❌ reactions to messages during processing
         "channel_prompts": {},         # Per-chat/topic ephemeral system prompts (topics inherit from parent group)
         "allowed_chats": "",           # If set, bot ONLY responds in these group/supergroup chat IDs (whitelist)
+        "home_channel": "",            # Default chat ID for cron delivery
+        "home_channel_name": "",       # Display name for the home channel
     },
 
     # Mattermost platform settings (gateway mode)
@@ -1268,6 +1276,8 @@ DEFAULT_CONFIG = {
         "free_response_channels": "",  # Comma-separated channel IDs where bot responds without mention
         "allowed_channels": "",        # If set, bot ONLY responds in these channel IDs (whitelist)
         "channel_prompts": {},         # Per-channel ephemeral system prompts
+        "home_channel": "",            # Default channel ID for cron delivery
+        "home_channel_name": "",       # Display name for the home channel
     },
 
     # Matrix platform settings (gateway mode)
@@ -1275,6 +1285,7 @@ DEFAULT_CONFIG = {
         "require_mention": True,       # Require @mention to respond in rooms
         "free_response_rooms": "",     # Comma-separated room IDs where bot responds without mention
         "allowed_rooms": "",           # If set, bot ONLY responds in these room IDs (whitelist)
+        "home_room": "",               # Default room ID for cron delivery and notifications
     },
 
     # Approval mode for dangerous commands:
@@ -1573,6 +1584,36 @@ REQUIRED_ENV_VARS = {}
 # Optional environment variables that enhance functionality
 OPTIONAL_ENV_VARS = {
     # ── Provider (handled in provider selection, not shown in checklists) ──
+    "OPENAI_API_KEY": {
+        "description": "OpenAI API key (used by tools and as fallback for OpenAI-compatible endpoints)",
+        "prompt": "OpenAI API key",
+        "url": "https://platform.openai.com/api-keys",
+        "password": True,
+        "category": "provider",
+    },
+    "OPENAI_BASE_URL": {
+        "description": "OpenAI-compatible base URL override (e.g. for local proxies)",
+        "prompt": "OpenAI base URL (leave empty for default)",
+        "url": None,
+        "password": False,
+        "category": "provider",
+        "advanced": True,
+    },
+    "ANTHROPIC_API_KEY": {
+        "description": "Anthropic API key (used by browser tool, vision analyze, and direct API calls)",
+        "prompt": "Anthropic API key",
+        "url": "https://console.anthropic.com/",
+        "password": True,
+        "category": "provider",
+    },
+    "ANTHROPIC_TOKEN": {
+        "description": "Anthropic OAuth token (alternative to API key; managed by OAuth login flow)",
+        "prompt": "Anthropic OAuth token",
+        "url": None,
+        "password": True,
+        "category": "provider",
+        "advanced": True,
+    },
     "NOUS_BASE_URL": {
         "description": "Nous Portal base URL override",
         "prompt": "Nous Portal base URL (leave empty for default)",
@@ -2236,6 +2277,68 @@ OPTIONAL_ENV_VARS = {
         "category": "tool",
         "advanced": True,
     },
+    "ANYDEALS_LANGFUSE_ENV": {
+        "description": "Langfuse environment tag (e.g. production, staging)",
+        "prompt": "Langfuse environment",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "ANYDEALS_LANGFUSE_RELEASE": {
+        "description": "Langfuse release identifier for version tracking",
+        "prompt": "Langfuse release",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "ANYDEALS_LANGFUSE_SAMPLE_RATE": {
+        "description": "Langfuse trace sampling rate (0.0 - 1.0)",
+        "prompt": "Langfuse sample rate",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "ANYDEALS_LANGFUSE_MAX_CHARS": {
+        "description": "Max characters per trace event sent to Langfuse",
+        "prompt": "Langfuse max chars",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "ANYDEALS_LANGFUSE_DEBUG": {
+        "description": "Enable Langfuse debug logging (true/false)",
+        "prompt": "Langfuse debug",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "LANGFUSE_PUBLIC_KEY": {
+        "description": "Langfuse project public key (standard SDK env var; prefer ANYDEALS_LANGFUSE_PUBLIC_KEY)",
+        "prompt": "Langfuse public key (pk-lf-...)",
+        "url": "https://cloud.langfuse.com",
+        "password": False,
+        "category": "tool",
+    },
+    "LANGFUSE_SECRET_KEY": {
+        "description": "Langfuse project secret key (standard SDK env var; prefer ANYDEALS_LANGFUSE_SECRET_KEY)",
+        "prompt": "Langfuse secret key (sk-lf-...)",
+        "url": "https://cloud.langfuse.com",
+        "password": True,
+        "category": "tool",
+    },
+    "LANGFUSE_BASE_URL": {
+        "description": "Langfuse server URL (standard SDK env var; prefer ANYDEALS_LANGFUSE_BASE_URL)",
+        "prompt": "Langfuse server URL",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
 
     # ── Messaging platforms ──
     "TELEGRAM_BOT_TOKEN": {
@@ -2255,6 +2358,20 @@ OPTIONAL_ENV_VARS = {
     "TELEGRAM_PROXY": {
         "description": "Proxy URL for Telegram connections (overrides HTTPS_PROXY). Supports http://, https://, socks5://",
         "prompt": "Telegram proxy URL (optional)",
+        "password": False,
+        "category": "messaging",
+    },
+    "TELEGRAM_HOME_CHANNEL": {
+        "description": "Default Telegram chat ID for cron delivery and notifications",
+        "prompt": "Telegram home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "TELEGRAM_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Telegram home channel",
+        "prompt": "Telegram home channel name",
+        "url": None,
         "password": False,
         "category": "messaging",
     },
@@ -2279,6 +2396,20 @@ OPTIONAL_ENV_VARS = {
         "password": False,
         "category": "messaging",
     },
+    "DISCORD_HOME_CHANNEL": {
+        "description": "Default Discord channel for cron delivery and notifications",
+        "prompt": "Discord home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "DISCORD_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Discord home channel",
+        "prompt": "Discord home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
     "SLACK_BOT_TOKEN": {
         "description": "Slack bot token (xoxb-). Get from OAuth & Permissions after installing your app. "
                        "Required scopes: chat:write, app_mentions:read, channels:history, groups:history, "
@@ -2295,6 +2426,20 @@ OPTIONAL_ENV_VARS = {
         "prompt": "Slack App Token (xapp-...)",
         "url": "https://api.slack.com/apps",
         "password": True,
+        "category": "messaging",
+    },
+    "SLACK_HOME_CHANNEL": {
+        "description": "Default Slack channel for cron delivery and notifications",
+        "prompt": "Slack home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SLACK_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Slack home channel",
+        "prompt": "Slack home channel name",
+        "url": None,
+        "password": False,
         "category": "messaging",
     },
     "MATTERMOST_URL": {
@@ -2328,6 +2473,27 @@ OPTIONAL_ENV_VARS = {
     "MATTERMOST_FREE_RESPONSE_CHANNELS": {
         "description": "Comma-separated Mattermost channel IDs where bot responds without @mention",
         "prompt": "Free-response channel IDs (comma-separated)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "MATTERMOST_HOME_CHANNEL": {
+        "description": "Default Mattermost channel for cron delivery and notifications",
+        "prompt": "Mattermost home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "MATTERMOST_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Mattermost home channel",
+        "prompt": "Mattermost home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "MATTERMOST_REPLY_MODE": {
+        "description": "Mattermost reply threading mode",
+        "prompt": "Mattermost reply mode",
         "url": None,
         "password": False,
         "category": "messaging",
@@ -2408,6 +2574,28 @@ OPTIONAL_ENV_VARS = {
         "category": "messaging",
         "advanced": True,
     },
+    "MATRIX_PASSWORD": {
+        "description": "Matrix account password (use MATRIX_ACCESS_TOKEN for token-based auth instead)",
+        "prompt": "Matrix password",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "MATRIX_ENCRYPTION": {
+        "description": "Enable E2EE encryption for Matrix (true/false)",
+        "prompt": "Matrix encryption",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "MATRIX_HOME_ROOM": {
+        "description": "Default Matrix room ID for cron delivery and notifications",
+        "prompt": "Matrix home room",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
     "BLUEBUBBLES_SERVER_URL": {
         "description": "BlueBubbles server URL for iMessage integration (e.g. http://192.168.1.10:1234)",
         "prompt": "BlueBubbles server URL",
@@ -2432,6 +2620,20 @@ OPTIONAL_ENV_VARS = {
     "BLUEBUBBLES_ALLOW_ALL_USERS": {
         "description": "Allow all BlueBubbles users without allowlist",
         "prompt": "Allow All BlueBubbles Users",
+        "category": "messaging",
+    },
+    "BLUEBUBBLES_HOME_CHANNEL": {
+        "description": "Default iMessage chat for cron delivery and notifications",
+        "prompt": "BlueBubbles home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "BLUEBUBBLES_HOME_CHANNEL_NAME": {
+        "description": "Display name for the BlueBubbles home channel",
+        "prompt": "BlueBubbles home channel name",
+        "url": None,
+        "password": False,
         "category": "messaging",
     },
     "QQ_APP_ID": {
@@ -2476,6 +2678,52 @@ OPTIONAL_ENV_VARS = {
         "prompt": "QQ Sandbox Mode",
         "category": "messaging",
     },
+    "QQ_HOME_CHANNEL": {
+        "description": "Legacy alias for QQBOT_HOME_CHANNEL; prefer QQBOT_ variant",
+        "prompt": "QQ Home Channel (legacy)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "QQ_HOME_CHANNEL_NAME": {
+        "description": "Legacy alias for QQBOT_HOME_CHANNEL_NAME; prefer QQBOT_ variant",
+        "prompt": "QQ Home Channel Name (legacy)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "QQ_MARKDOWN_SUPPORT": {
+        "description": "Enable markdown rendering in QQ messages (true/false)",
+        "prompt": "QQ Markdown Support",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "QQ_STT_API_KEY": {
+        "description": "QQ speech-to-text API key",
+        "prompt": "QQ STT API key",
+        "url": None,
+        "password": True,
+        "category": "tool",
+    },
+    "QQ_STT_BASE_URL": {
+        "description": "QQ STT API base URL override",
+        "prompt": "QQ STT base URL",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "QQ_STT_MODEL": {
+        "description": "QQ STT model name",
+        "prompt": "QQ STT model",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
     "IRC_SERVER": {
         "description": "IRC server hostname (e.g. irc.libera.chat)",
         "prompt": "IRC server",
@@ -2512,6 +2760,20 @@ OPTIONAL_ENV_VARS = {
         "password": True,
         "category": "messaging",
         "advanced": True,
+    },
+    "IRC_PORT": {
+        "description": "IRC server port (default: 6667)",
+        "prompt": "IRC server port",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "IRC_USE_TLS": {
+        "description": "Use TLS/SSL for IRC connection (true/false)",
+        "prompt": "Use TLS for IRC",
+        "url": None,
+        "password": False,
+        "category": "messaging",
     },
     "GATEWAY_ALLOW_ALL_USERS": {
         "description": "Allow all users to interact with messaging bots (true/false). Default: false.",
@@ -2599,6 +2861,421 @@ OPTIONAL_ENV_VARS = {
         "category": "messaging",
     },
 
+    # ── Signal ──
+    "SIGNAL_ACCOUNT": {
+        "description": "Signal account phone number (e.g. +1234567890)",
+        "prompt": "Signal account phone number",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_CLI_PATH": {
+        "description": "Path to signal-cli executable or wrapper script",
+        "prompt": "Signal CLI path",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_PHONE_NUMBER": {
+        "description": "Phone number for Signal bot account (e.g. +1234567890)",
+        "prompt": "Signal phone number",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_HTTP_URL": {
+        "description": "signal-cli-rest-api base URL (e.g. http://localhost:8080)",
+        "prompt": "Signal HTTP URL",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_ALLOWED_USERS": {
+        "description": "Comma-separated Signal phone numbers allowed to use the bot",
+        "prompt": "Allowed Signal users (comma-separated)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_GROUP_ALLOWED_USERS": {
+        "description": "Comma-separated Signal group IDs allowed to interact with the bot",
+        "prompt": "Allowed Signal groups (comma-separated)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_HOME_CHANNEL": {
+        "description": "Default Signal group/channel for cron delivery and notifications",
+        "prompt": "Signal home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SIGNAL_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Signal home channel",
+        "prompt": "Signal home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── SMS ──
+    "SMS_HOME_CHANNEL": {
+        "description": "Default SMS phone number for cron delivery and notifications",
+        "prompt": "SMS home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "SMS_HOME_CHANNEL_NAME": {
+        "description": "Display name for the SMS home channel",
+        "prompt": "SMS home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── DingTalk ──
+    "DINGTALK_CLIENT_ID": {
+        "description": "DingTalk app client ID from DingTalk Open Platform",
+        "prompt": "DingTalk client ID",
+        "url": "https://open.dingtalk.com/",
+        "password": False,
+        "category": "messaging",
+    },
+    "DINGTALK_CLIENT_SECRET": {
+        "description": "DingTalk app client secret from DingTalk Open Platform",
+        "prompt": "DingTalk client secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "DINGTALK_APP_KEY": {
+        "description": "DingTalk app key (alternative credential for old-style DingTalk bots)",
+        "prompt": "DingTalk app key",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "DINGTALK_APP_SECRET": {
+        "description": "DingTalk app secret (alternative credential for old-style DingTalk bots)",
+        "prompt": "DingTalk app secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "DINGTALK_HOME_CHANNEL": {
+        "description": "Default DingTalk conversation ID for cron delivery and notifications",
+        "prompt": "DingTalk home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "DINGTALK_HOME_CHANNEL_NAME": {
+        "description": "Display name for the DingTalk home channel",
+        "prompt": "DingTalk home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── Feishu / Lark ──
+    "FEISHU_APP_ID": {
+        "description": "Feishu/Lark app ID from Feishu Open Platform",
+        "prompt": "Feishu app ID",
+        "url": "https://open.feishu.cn/",
+        "password": False,
+        "category": "messaging",
+    },
+    "FEISHU_APP_SECRET": {
+        "description": "Feishu/Lark app secret from Feishu Open Platform",
+        "prompt": "Feishu app secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "FEISHU_ENCRYPT_KEY": {
+        "description": "Feishu message encryption key",
+        "prompt": "Feishu encrypt key",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "FEISHU_VERIFICATION_TOKEN": {
+        "description": "Feishu event verification token",
+        "prompt": "Feishu verification token",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "FEISHU_HOME_CHANNEL": {
+        "description": "Default Feishu chat ID for cron delivery and notifications",
+        "prompt": "Feishu home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "FEISHU_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Feishu home channel",
+        "prompt": "Feishu home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── Yuanbao ──
+    "YUANBAO_HOME_CHANNEL": {
+        "description": "Default Yuanbao chat for cron delivery and notifications",
+        "prompt": "Yuanbao home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "YUANBAO_HOME_CHANNEL_NAME": {
+        "description": "Display name for the Yuanbao home channel",
+        "prompt": "Yuanbao home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── WeCom / Enterprise WeChat ──
+    "WECOM_BOT_ID": {
+        "description": "WeCom bot ID from WeCom Admin Console",
+        "prompt": "WeCom bot ID",
+        "url": "https://work.weixin.qq.com/",
+        "password": False,
+        "category": "messaging",
+    },
+    "WECOM_SECRET": {
+        "description": "WeCom bot secret from WeCom Admin Console",
+        "prompt": "WeCom secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "WECOM_CORP_ID": {
+        "description": "WeCom Corp ID for API authentication",
+        "prompt": "WeCom Corp ID",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WECOM_CORP_SECRET": {
+        "description": "WeCom Corp Secret for API authentication",
+        "prompt": "WeCom Corp Secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "WECOM_AGENT_ID": {
+        "description": "WeCom Agent/App ID for message delivery",
+        "prompt": "WeCom Agent ID",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WECOM_CALLBACK_CORP_ID": {
+        "description": "WeCom callback Corp ID for event subscriptions",
+        "prompt": "WeCom callback Corp ID",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WECOM_CALLBACK_CORP_SECRET": {
+        "description": "WeCom callback Corp Secret for event subscriptions",
+        "prompt": "WeCom callback Corp Secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "WECOM_CALLBACK_AGENT_ID": {
+        "description": "WeCom callback Agent ID for event subscriptions",
+        "prompt": "WeCom callback Agent ID",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WECOM_CALLBACK_TOKEN": {
+        "description": "WeCom callback verification token",
+        "prompt": "WeCom callback token",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "WECOM_CALLBACK_ENCODING_AES_KEY": {
+        "description": "WeCom callback AES encryption key",
+        "prompt": "WeCom callback encoding AES key",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "WECOM_CALLBACK_HOST": {
+        "description": "WeCom callback server host",
+        "prompt": "WeCom callback host",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "WECOM_CALLBACK_PORT": {
+        "description": "WeCom callback server port",
+        "prompt": "WeCom callback port",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "WECOM_HOME_CHANNEL": {
+        "description": "Default WeCom chat for cron delivery and notifications",
+        "prompt": "WeCom home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WECOM_HOME_CHANNEL_NAME": {
+        "description": "Display name for the WeCom home channel",
+        "prompt": "WeCom home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── WeChat Official Account ──
+    "WEIXIN_ACCOUNT_ID": {
+        "description": "WeChat Official Account app ID",
+        "prompt": "WeChat account ID",
+        "url": "https://mp.weixin.qq.com/",
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_TOKEN": {
+        "description": "WeChat Official Account token for message verification",
+        "prompt": "WeChat token",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "WEIXIN_BASE_URL": {
+        "description": "WeChat API base URL override",
+        "prompt": "WeChat base URL",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "WEIXIN_CDN_BASE_URL": {
+        "description": "WeChat CDN base URL override",
+        "prompt": "WeChat CDN base URL",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+        "advanced": True,
+    },
+    "WEIXIN_HOME_CHANNEL": {
+        "description": "Default WeChat user/channel for cron delivery and notifications",
+        "prompt": "WeChat home channel",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_HOME_CHANNEL_NAME": {
+        "description": "Display name for the WeChat home channel",
+        "prompt": "WeChat home channel name",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_DM_POLICY": {
+        "description": "WeChat DM handling policy",
+        "prompt": "WeChat DM policy",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_GROUP_POLICY": {
+        "description": "WeChat group message handling policy",
+        "prompt": "WeChat group policy",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_ALLOWED_USERS": {
+        "description": "Comma-separated WeChat OpenIDs allowed to use the bot",
+        "prompt": "Allowed WeChat OpenIDs (comma-separated)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_GROUP_ALLOWED_USERS": {
+        "description": "Comma-separated WeChat group IDs allowed to interact with the bot",
+        "prompt": "Allowed WeChat group IDs (comma-separated)",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WEIXIN_ALLOW_ALL_USERS": {
+        "description": "Allow all WeChat users without allowlist (true/false)",
+        "prompt": "Allow all WeChat users",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+
+    # ── WeChat (alternative credentials) ──
+    "WECHAT_APP_ID": {
+        "description": "WeChat Mini Program or Official Account app ID",
+        "prompt": "WeChat app ID",
+        "url": "https://mp.weixin.qq.com/",
+        "password": False,
+        "category": "messaging",
+    },
+    "WECHAT_APP_SECRET": {
+        "description": "WeChat Mini Program or Official Account app secret",
+        "prompt": "WeChat app secret",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+
+    # ── WhatsApp ──
+    "WHATSAPP_ENABLED": {
+        "description": "Enable WhatsApp messaging platform (true/false)",
+        "prompt": "Enable WhatsApp",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WHATSAPP_MODE": {
+        "description": "WhatsApp connection mode",
+        "prompt": "WhatsApp mode",
+        "url": None,
+        "password": False,
+        "category": "messaging",
+    },
+    "WHATSAPP_PHONE_NUMBER_ID": {
+        "description": "WhatsApp Cloud API phone number ID from Meta developer dashboard",
+        "prompt": "WhatsApp phone number ID",
+        "url": "https://developers.facebook.com/",
+        "password": False,
+        "category": "messaging",
+    },
+    "WHATSAPP_TOKEN": {
+        "description": "WhatsApp Cloud API access token from Meta developer dashboard",
+        "prompt": "WhatsApp token",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+    "WHATSAPP_VERIFY_TOKEN": {
+        "description": "WhatsApp webhook verify token for callback validation",
+        "prompt": "WhatsApp verify token",
+        "url": None,
+        "password": True,
+        "category": "messaging",
+    },
+
     # ── Agent settings ──
     # NOTE: MESSAGING_CWD was removed here — use terminal.cwd in config.yaml
     # instead.  The gateway reads TERMINAL_CWD (bridged from terminal.cwd).
@@ -2646,6 +3323,32 @@ OPTIONAL_ENV_VARS = {
         "url": None,
         "password": False,
         "category": "setting",
+    },
+
+    # ── Terminal SSH / env ──
+    "TERMINAL_ENV": {
+        "description": "Terminal execution backend (synced from config.yaml terminal.backend)",
+        "prompt": "Terminal backend",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "TERMINAL_SSH_KEY": {
+        "description": "Path to SSH private key for terminal SSH backend",
+        "prompt": "SSH private key path",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
+    },
+    "TERMINAL_SSH_PORT": {
+        "description": "SSH port for terminal SSH backend (default: 22)",
+        "prompt": "SSH port",
+        "url": None,
+        "password": False,
+        "category": "tool",
+        "advanced": True,
     },
 }
 
@@ -4981,6 +5684,18 @@ def set_config_value(key: str, value: str):
         "terminal.container_memory": "TERMINAL_CONTAINER_MEMORY",
         "terminal.container_disk": "TERMINAL_CONTAINER_DISK",
         "terminal.container_persistent": "TERMINAL_CONTAINER_PERSISTENT",
+        # Messaging platform home channels — keep .env in sync for gateway
+        "discord.home_channel": "DISCORD_HOME_CHANNEL",
+        "discord.home_channel_name": "DISCORD_HOME_CHANNEL_NAME",
+        "telegram.home_channel": "TELEGRAM_HOME_CHANNEL",
+        "telegram.home_channel_name": "TELEGRAM_HOME_CHANNEL_NAME",
+        "slack.home_channel": "SLACK_HOME_CHANNEL",
+        "slack.home_channel_name": "SLACK_HOME_CHANNEL_NAME",
+        "mattermost.home_channel": "MATTERMOST_HOME_CHANNEL",
+        "mattermost.home_channel_name": "MATTERMOST_HOME_CHANNEL_NAME",
+        "matrix.home_room": "MATRIX_HOME_ROOM",
+        "whatsapp.home_channel": "WHATSAPP_HOME_CHANNEL",
+        "whatsapp.home_channel_name": "WHATSAPP_HOME_CHANNEL_NAME",
     }
     if key in _config_to_env_sync:
         save_env_value(_config_to_env_sync[key], str(value))

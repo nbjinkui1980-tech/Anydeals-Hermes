@@ -266,20 +266,12 @@ function handleImport(e: Event) {
 
 /* ---- Loading state ---- */
 
-const ready = computed(() => config.value && schema.value);
+const ready = computed(() => Boolean(config.value && schema.value));
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <PluginSlot name="config:top" />
-
-    <!-- Loading -->
-    <div
-      v-if="!ready"
-      class="flex items-center justify-center py-24"
-    >
-      <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-    </div>
 
     <template v-if="ready">
       <!-- Header Bar -->
@@ -477,6 +469,12 @@ const ready = computed(() => config.value && schema.value);
         </div>
       </div>
     </template>
+    <div
+      v-else
+      class="flex items-center justify-center py-24"
+    >
+      <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+    </div>
 
     <PluginSlot name="config:bottom" />
   </div>
