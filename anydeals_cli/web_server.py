@@ -344,6 +344,62 @@ _SCHEMA_OVERRIDES: Dict[str, Dict[str, Any]] = {
         "description": "Reasoning effort for delegated subagents",
         "options": ["", "low", "medium", "high"],
     },
+    # ── Messaging platform home channels ──
+    "discord.home_channel": {
+        "type": "string",
+        "description": "Default Discord channel ID for cron job delivery and session notifications",
+        "category": "discord",
+    },
+    "discord.home_channel_name": {
+        "type": "string",
+        "description": "Human-readable name for the Discord home channel shown in the dashboard",
+        "category": "discord",
+    },
+    "telegram.home_channel": {
+        "type": "string",
+        "description": "Default Telegram chat ID for cron job delivery",
+        "category": "discord",
+    },
+    "telegram.home_channel_name": {
+        "type": "string",
+        "description": "Human-readable name for the Telegram home channel",
+        "category": "discord",
+    },
+    "slack.home_channel": {
+        "type": "string",
+        "description": "Default Slack channel for cron job delivery and notifications",
+        "category": "discord",
+    },
+    "slack.home_channel_name": {
+        "type": "string",
+        "description": "Human-readable name for the Slack home channel",
+        "category": "discord",
+    },
+    "mattermost.home_channel": {
+        "type": "string",
+        "description": "Default Mattermost channel for cron job delivery",
+        "category": "discord",
+    },
+    "mattermost.home_channel_name": {
+        "type": "string",
+        "description": "Human-readable name for the Mattermost home channel",
+        "category": "discord",
+    },
+    "matrix.home_room": {
+        "type": "string",
+        "description": "Default Matrix room ID for cron job delivery and notifications",
+        "category": "discord",
+    },
+    "whatsapp.home_channel": {
+        "type": "string",
+        "description": "Default WhatsApp chat for cron job delivery",
+        "category": "discord",
+    },
+    "whatsapp.home_channel_name": {
+        "type": "string",
+        "description": "Human-readable name for the WhatsApp home channel",
+        "category": "discord",
+    },
 }
 
 # Categories with fewer fields get merged into "general" to avoid tab sprawl.
@@ -360,10 +416,14 @@ _CATEGORY_MERGE: Dict[str, str] = {
     "code_execution": "agent",
     "prompt_caching": "agent",
     "goals": "agent",
-    # Only `telegram.reactions` currently lives under telegram — fold it in
-    # with the other messaging-platform config (discord) so it isn't an
-    # orphan tab of one field.
+    # Merge messaging-platform config into one "Messaging" tab so settings
+    # for discord, telegram, slack, mattermost, matrix, and whatsapp are
+    # all accessible from the same place without tab sprawl.
     "telegram": "discord",
+    "slack": "discord",
+    "mattermost": "discord",
+    "matrix": "discord",
+    "whatsapp": "discord",
 }
 
 # Display order for tabs — unlisted categories sort alphabetically after these.

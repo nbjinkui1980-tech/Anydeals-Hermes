@@ -275,7 +275,7 @@ export const zh: Translations = {
       tts: "文字转语音",
       stt: "语音转文字",
       logging: "日志",
-      discord: "Discord",
+      discord: "消息平台",
       auxiliary: "辅助",
     },
   },

@@ -269,7 +269,7 @@ export const en: Translations = {
       tts: "Text-to-Speech",
       stt: "Speech-to-Text",
       logging: "Logging",
-      discord: "Discord",
+      discord: "Messaging",
       auxiliary: "Auxiliary",
     },
   },
