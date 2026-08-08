@@ -878,6 +878,11 @@ class GatewayConfig:
     # gateway behaves exactly as before — single HERMES_HOME, no profile stamping.
     multiplex_profiles: bool = False
 
+    # AnyAgent management-only mode (H2). When True, the gateway runs in a
+    # fail-closed managed profile: every inbound message is intercepted by
+    # managed_dispatch before any platform adapter processes it.
+    anyagent_management_only: bool = False
+
     # Opt-in systemd event-loop watchdog. Zero preserves Type=simple and
     # disables sd_notify at runtime.
     systemd_watchdog_seconds: int = 0

@@ -4770,6 +4770,18 @@ class BasePlatformAdapter(ABC):
         if not self._message_handler:
             return
 
+        # AnyAgent H2 managed-dispatch ingress guard: when the management-only
+        # profile is active, intercept every inbound message before the platform
+        # adapter runs any bypass/queue/Agent branch.
+        try:
+            from gateway import managed_dispatch as _md
+            _decision = await _md.should_bypass_for_management(event, self.config.extra)
+            if _decision is not None:
+                logger.debug("managed_dispatch blocked message: %s", _decision.get("reason"))
+                return
+        except Exception:
+            pass
+
         coerce_plaintext_gateway_command(event)
 
         # Rewrite ``event.source.thread_id`` via the installed recovery hook
